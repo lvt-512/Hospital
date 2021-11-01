@@ -1,0 +1,47 @@
+<div class="modal modal-form modal-form-sm fade" id="modalQuestionForm">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <button aria-label='Close' class='close' data-dismiss='modal'>
+                <i class="icon-error"></i>
+            </button>
+            <div class="modal-body">
+                <div class="modal-form">
+                    <h3>Ask a Question</h3>
+                    <form class="mt-15" id="questionForm" method="post" novalidate>
+                        <div class="successform">
+                            <p>Your message was sent successfully!</p>
+                        </div>
+                        <div class="errorform">
+                            <p>Something went wrong, try refreshing and submitting the form again.</p>
+                        </div>
+                        <div class="input-group">
+								<span>
+								<i class="icon-user"></i>
+							</span>
+                            <input type="text" name="name" class="form-control" autocomplete="off"
+                                   placeholder="Your Name*"/>
+                        </div>
+                        <div class="input-group">
+								<span>
+									<i class="icon-email2"></i>
+								</span>
+                            <input type="text" name="email" class="form-control" autocomplete="off"
+                                   placeholder="Your Email*"/>
+                        </div>
+                        <div class="input-group">
+								<span>
+									<i class="icon-smartphone"></i>
+								</span>
+                            <input type="text" name="phone" class="form-control" autocomplete="off"
+                                   placeholder="Your Phone"/>
+                        </div>
+                        <textarea name="message" class="form-control" placeholder="Your comment*"></textarea>
+                        <div class="text-right mt-2">
+                            <button type="submit" class="btn btn-sm btn-hover-fill">Ask Now</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
