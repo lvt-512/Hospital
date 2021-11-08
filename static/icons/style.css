@@ -186,6 +186,9 @@
 .icon-facebook-logo-circle:before {
   content: "\e90e";
 }
+.icon-user-logo-circle:before{
+  content: "\e92d";
+}
 .icon-star:before {
   content: "\e90f";
 }

@@ -1,0 +1,13 @@
+{% extends 'admin/master.html' %}
+
+{% block title %}Clinic - Admin{% endblock %}
+
+{% block body %}
+    {% if current_user.is_authenticated %}
+        <!--current_user : An object of User-->
+        <h1 class="text-danger">WELCOME {{ current_user.name }} TO OUR WEBSITE!!!</h1>
+        <p>This is a demo application</p>
+    {% else %}
+        {% include 'admin/login_admin.html' %}
+    {% endif %}
+{% endblock %}

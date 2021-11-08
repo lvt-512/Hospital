@@ -22,6 +22,17 @@
 							<a href="#" class="hovicon"><i class="icon-twitter-logo-circle"></i></a>
 							<a href="#" class="hovicon"><i class="icon-google-plus-circle"></i></a>
 						</span>
+                    {% if current_user.is_authenticated %}
+                    <span class="header-user">
+                        <a href="#"><i class="icon-user-logo-circle"></i></a>
+						<a href="#">User</a>
+                    </span>
+                    {% else %}
+                    <span class="header-login">
+                        <a href="/user-login?log=signup">Sign Up</a>
+                        <a href="/user-login">Sign In</a>
+                    </span>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -33,7 +44,8 @@
                     <span class="icon-menu"></span>
                 </button>
                 <div class="col-lg-auto col-lg-2 d-flex align-items-lg-center">
-                    <a href="index.html" class="header-logo"><img src="{{ url_for('static', filename='images/logo.png') }}" alt="" class="img-fluid"></a>
+                    <a href="index.html" class="header-logo"><img
+                            src="{{ url_for('static', filename='images/logo.png') }}" alt="" class="img-fluid"></a>
                 </div>
                 <div class="col-lg ml-auto header-nav-wrap">
                     <div class="header-nav js-header-nav">
@@ -44,35 +56,11 @@
                                         <a class="nav-link" href="about.html">About Us</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="services.html" class="nav-link dropdown-toggle" data-toggle="dropdown">Services</a>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="services.html">All Services</a></li>
-                                            <li><a class="dropdown-item" href="service-page.html">Service Page</a></li>
-                                            <li><a class="dropdown-item" href="prices.html">Prices</a></li>
-                                            <li><a class="dropdown-item" href="shop-listing.html">Online Shop</a></li>
-                                        </ul>
+                                        <a href="/schedule" class="nav-link dropdown-toggle"
+                                           data-toggle="dropdown">Schedule Table</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="gallery.html" class="nav-link dropdown-toggle" data-toggle="dropdown">Smiles
-                                            Gallery</a>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="gallery.html">Creative Gallery</a></li>
-                                            <li><a class="dropdown-item" href="gallery-simple.html">Simple Gallery</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="our-specialist.html" class="nav-link dropdown-toggle"
-                                           data-toggle="dropdown">Our Specialists</a>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="our-specialist.html">All Specialists</a>
-                                            </li>
-                                            <li><a class="dropdown-item" href="doctor-page.html">Doctor Page</a></li>
-                                            <li><a class="dropdown-item" href="schedule.html">Schedule Table</a></li>
-                                        </ul>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="testimonials.html">Testimonials</a>
+                                        <a class="nav-link" href="/question">Questions</a>
                                     </li>
                                     <li class="nav-item dropdown">
                                         <a href="blog.html" class="nav-link dropdown-toggle"
@@ -98,54 +86,25 @@
                             <button type="submit"><i class="icon-search"></i></button>
                         </form>
                     </div>
-                    <div class="header-cart cart-toggler">
-                        <a href="#" class="icon icon-cart"></a>
-                        <span class="badge">2</span>
-                        <div class="header-cart-dropdown">
-                            <div class="prd-sm">
-                                <div class="prd-sm-img">
-                                    <a href="shop-product.html"><img src="{{ url_for('static', filename='images/product/prd-sm-1.jpg') }}" class="img-fluid"
-                                                                     alt=""></a>
-                                </div>
-                                <div class="prd-sm-info">
-                                    <h3><a href="shop-product.html">Active Wow Teeth Whitening Charcoal Powder</a></h3>
-                                    <div class="price">$38.88</div>
-                                </div>
-                                <div class="prd-sm-delete"><i class="icon-close"></i></div>
-                            </div>
-                            <div class="prd-sm">
-                                <div class="prd-sm-img">
-                                    <a href="shop-product.html"><img src="{{ url_for('static', filename='images/product/prd-sm-2.jpg') }}" class="img-fluid"
-                                                                     alt=""></a>
-                                </div>
-                                <div class="prd-sm-info">
-                                    <h3><a href="shop-product.html">Electric Toothbrush</a></h3>
-                                    <div class="price">$39.97</div>
-                                </div>
-                                <div class="prd-sm-delete"><i class="icon-close"></i></div>
-                            </div>
-                            <div class="header-cart-total">
-                                <div class="float-left">Total:</div>
-                                <div class="float-right">$78.85</div>
-                            </div>
-                            <a href="#" class="btn btn-sm btn-hover-fill"><span>CheckOut</span></a>
-                        </div>
-                    </div>
                     <div class="header-lang lang-toggler">
                         <a href="#" class="icon icon-globe1"></a>
                         <div class="header-lang-dropdown">
                             <ul>
-                                <li><a href="#"><span class="header-lang-flag"><img src="{{ url_for('static', filename='images/flag/flag_en.png') }}"
-                                                                                    alt=""></span><span>English</span></a>
+                                <li><a href="#"><span class="header-lang-flag"><img
+                                        src="{{ url_for('static', filename='images/flag/flag_en.png') }}"
+                                        alt=""></span><span>English</span></a>
                                 </li>
-                                <li><a href="#"><span class="header-lang-flag"><img src="{{ url_for('static', filename='images/flag/flag_fr.png') }}"
-                                                                                    alt=""></span><span>French</span></a>
+                                <li><a href="#"><span class="header-lang-flag"><img
+                                        src="{{ url_for('static', filename='images/flag/flag_fr.png') }}"
+                                        alt=""></span><span>French</span></a>
                                 </li>
-                                <li><a href="#"><span class="header-lang-flag"><img src="{{ url_for('static', filename='images/flag/flag_de.png') }}"
-                                                                                    alt=""></span><span>Denmark</span></a>
+                                <li><a href="#"><span class="header-lang-flag"><img
+                                        src="{{ url_for('static', filename='images/flag/flag_de.png') }}"
+                                        alt=""></span><span>Denmark</span></a>
                                 </li>
-                                <li><a href="#"><span class="header-lang-flag"><img src="{{ url_for('static', filename='images/flag/flag_ru.png') }}"
-                                                                                    alt=""></span><span>Russian</span></a>
+                                <li><a href="#"><span class="header-lang-flag"><img
+                                        src="{{ url_for('static', filename='images/flag/flag_ru.png') }}"
+                                        alt=""></span><span>Russian</span></a>
                                 </li>
                             </ul>
                         </div>
