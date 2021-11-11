@@ -1,6 +1,6 @@
 import hashlib
 
-from flask_login import login_user
+from flask_login import login_user, logout_user
 
 from my_clinic import app, my_login
 from flask import render_template, request, redirect
@@ -43,7 +43,7 @@ def admin_login_exe():
     password = str(hashlib.md5(password.encode("utf-8")).digest())
 
     user = Account.query.filter(AccountAssistant.username == username,
-                                         AccountAssistant.password == password).first()
+                                AccountAssistant.password == password).first()
     if user:  # login success
         login_user(user)
 
@@ -72,6 +72,14 @@ def user_login_exe():
     return render_template("login_user.html",
                            err_msg=err_msg,
                            log=request.args.get("log"))  # get into form register
+
+
+# Log out
+@app.route("/user-logout")
+def user_logout_exe():
+    logout_user()
+
+    return redirect("/")
 
 
 if __name__ == '__main__':

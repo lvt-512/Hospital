@@ -23,15 +23,21 @@
 							<a href="#" class="hovicon"><i class="icon-google-plus-circle"></i></a>
 						</span>
                     {% if current_user.is_authenticated %}
-                    <span class="header-user">
-                        <a href="#"><i class="icon-user-logo-circle"></i></a>
-						<a href="#">User</a>
-                    </span>
+                        <div class="dropdown">
+                            <a class="header-user dropdown-toggle" href="#" data-toggle="dropdown">
+                                <span><i class="icon-user-logo-circle"></i></span>
+                                <span>{{ current_user.patient.name }}</span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/user-profile">My profile</a></li>
+                                <li><a class="dropdown-item" href="/user-logout">Log out</a></li>
+                            </ul>
+                        </div>
                     {% else %}
-                    <span class="header-login">
-                        <a href="/user-login?log=signup">Sign Up</a>
-                        <a href="/user-login">Sign In</a>
-                    </span>
+                        <span class="header-login">
+                            <a href="/user-login?log=signup">Sign Up</a>
+                            <a href="/user-login">Sign In</a>
+                        </span>
                     {% endif %}
                 </div>
             </div>
@@ -53,7 +59,7 @@
                             <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
                                 <ul class="navbar-nav">
                                     <li class="nav-item">
-                                        <a class="nav-link" href="about.html">About Us</a>
+                                        <a class="nav-link" href="/about">About Us</a>
                                     </li>
                                     <li class="nav-item">
                                         <a href="/schedule" class="nav-link dropdown-toggle"

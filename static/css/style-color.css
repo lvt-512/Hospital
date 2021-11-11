@@ -13719,9 +13719,14 @@ body.noScroll {
     border-radius: 30px;
     transition: 0.2s;
     cursor: pointer;
+    text-decoration: none!important;
 }
 
-.header-user:hover {
+.header-user:after{
+    display: none;
+}
+
+.dropdown:hover .header-user {
     border: 2px solid #1e76bd;
     box-shadow: 0 -5px 5px rgba(255, 255, 255, 0.05),
     inset 0 -5px 5px rgba(255, 255, 255, 0.05),
@@ -13729,19 +13734,42 @@ body.noScroll {
     inset 0 5px 5px rgba(0, 0, 0, 0.3);
 }
 
-.header-user a {
+.header-user span {
     display: inline-block;
-    text-decoration: none;
     position: relative;
     font-weight: 600;
 }
 
-.header-user:hover a {
+.header-user:hover span {
     text-shadow: 6px 6px 5px rgba(0, 0, 0, 0.3);
 }
 
 .header-user [class*='icon-'] {
     font-size: 25px;
+}
+
+.header-user + .dropdown-menu{
+    border: 1px solid #1e76bd;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, .2)!important;
+}
+
+.header-user + .dropdown-menu li .dropdown-item{
+    padding: 10px;
+    background-color: #ffffff;
+    color: #1b1e21;
+    letter-spacing: 0.5px;
+}
+
+.header-user + .dropdown-menu li:hover .dropdown-item{
+    font-weight: 600;
+}
+
+.header-user + .dropdown-menu li:last-child .dropdown-item{
+    padding: 5px 10px;
+    background-color: #1e76bd;
+    color: #fff;
 }
 
 /* Login - Register */
