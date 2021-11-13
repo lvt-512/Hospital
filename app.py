@@ -69,7 +69,7 @@ def user_login_exe():
         else:
             err_msg = "Incorrect username or password!"
 
-    return render_template("login_user.html",
+    return render_template("login-user.html",
                            err_msg=err_msg,
                            log=request.args.get("log"))  # get into form register
 
