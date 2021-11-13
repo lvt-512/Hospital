@@ -1,9 +1,9 @@
 import hashlib
-
+import utils
 from flask_login import login_user, logout_user
 
 from my_clinic import app, my_login
-from flask import render_template, request, redirect
+from flask import render_template, request, redirect, jsonify
 
 from my_clinic.models import AccountPatient, AccountAssistant, Account
 
@@ -80,6 +80,22 @@ def user_logout_exe():
     logout_user()
 
     return redirect("/")
+
+
+@app.route("/api/add-questions", methods=["post"])
+def add_questions():
+    questions = {
+        "name": request.form.get("name"),
+        "email": request.form.get("email"),
+        "topic": request.form.get("topic"),
+        "message": request.form.get("message"),
+    }
+    if utils.add_questions(questions):
+        return True
+
+    return False
+
+
 
 
 if __name__ == '__main__':

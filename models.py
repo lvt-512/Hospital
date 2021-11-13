@@ -38,6 +38,7 @@ class Policy(db.Model):
 class Customer(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False)
+    email = Column(String(100), nullable=False)
     questions = relationship('Question', backref='customer', lazy=True)
     books = relationship('Books', backref='customer', lazy=True)
 

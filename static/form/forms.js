@@ -45,7 +45,7 @@
 					});
 				}
 								
-				// contact page form
+				// question form
 				if (forms.contactForm.length) {
 					var $contactform = forms.contactForm;
 					$contactform.validate({
@@ -81,7 +81,7 @@
 							$(form).ajaxSubmit({
 								type: "POST",
 								data: $(form).serialize(),
-								url: "form/process-contact.php",
+								url: "/api/add-questions",
 								success: function success() {
 									$('.successform', $contactform).fadeIn();
 									$contactform.get(0).reset();
