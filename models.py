@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Boolean, DateTime, Float, ForeignKey, Time
+from sqlalchemy import Column, String, Integer, Boolean, DateTime, Float, ForeignKey
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin
 from my_clinic import db
@@ -38,7 +38,8 @@ class Policy(db.Model):
 class Customer(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False)
-    email = Column(String(100), nullable=False)
+    email = Column(String(100), nullable=False, unique=True)
+    avatar = Column(String(500), nullable=True)
     questions = relationship('Question', backref='customer', lazy=True)
     books = relationship('Books', backref='customer', lazy=True)
 
@@ -80,7 +81,7 @@ class Account(db.Model, UserMixin):
     id = Column(Integer, primary_key=True, autoincrement=True)
     active = Column(Boolean, default=True)
     joined_date = Column(DateTime, default=datetime.now())
-    username = Column(String(50), nullable=False, unique=True)
+    email = Column(String(50), nullable=False, unique=True)
     password = Column(String(100), nullable=False)
 
     type = Column(String(50))

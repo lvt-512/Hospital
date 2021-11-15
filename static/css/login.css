@@ -90,11 +90,27 @@ form {
     text-align: center;
 }
 
+form > label {
+    width: 100%;
+    margin: 8px 0;
+}
+
+form > label[for="password"] {
+    margin-top: 2px;
+}
+
+label.error{
+    width: 100%;
+    text-align: right;
+    display: inline-block;
+    color: #db4437;
+    font-size: 10px;
+}
+
 input {
     background-color: #eee;
     border: none;
     padding: 12px 15px;
-    margin: 8px 0;
     width: 100%;
 }
 
@@ -233,6 +249,7 @@ input {
     margin: 0 5px;
     height: 40px;
     width: 40px;
+    font-size: 13px;
 }
 
 .social-container a.f:hover {

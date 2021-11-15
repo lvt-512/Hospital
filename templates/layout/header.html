@@ -35,7 +35,7 @@
                         </div>
                     {% else %}
                         <span class="header-login">
-                            <a href="/user-login?log=signup">Sign Up</a>
+                            <a href="/user-login">Sign Up</a>
                             <a href="/user-login">Sign In</a>
                         </span>
                     {% endif %}
@@ -50,7 +50,7 @@
                     <span class="icon-menu"></span>
                 </button>
                 <div class="col-lg-auto col-lg-2 d-flex align-items-lg-center">
-                    <a href="index.html" class="header-logo"><img
+                    <a href="/" class="header-logo"><img
                             src="{{ url_for('static', filename='images/logo.png') }}" alt="" class="img-fluid"></a>
                 </div>
                 <div class="col-lg ml-auto header-nav-wrap">
@@ -68,18 +68,11 @@
                                     <li class="nav-item">
                                         <a class="nav-link" href="/question">Questions</a>
                                     </li>
-                                    <li class="nav-item dropdown">
-                                        <a href="blog.html" class="nav-link dropdown-toggle"
-                                           data-toggle="dropdown">Blog</a>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="blog.html">Blog Posts</a></li>
-                                            <li><a class="dropdown-item" href="blog-grid.html">Blog Grid Posts</a></li>
-                                            <li><a class="dropdown-item" href="blog-post-page.html">Blog Single Post</a>
-                                            </li>
-                                        </ul>
+                                    <li class="nav-item">
+                                        <a href="/blog" class="nav-link">Blog</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="contact.html">Contacts</a>
+                                        <a class="nav-link" href="/contact">Contacts</a>
                                     </li>
                                 </ul>
                             </div>

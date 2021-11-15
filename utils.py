@@ -1,4 +1,8 @@
-from my_clinic.models import Customer, Question, db
+import hashlib
+import hmac
+
+from my_clinic import app
+from my_clinic.models import Customer, Question, db, Patient
 
 
 def add_questions(questions):
@@ -18,5 +22,17 @@ def add_questions(questions):
 
     return False
 
-def add_times():
-    pass
+
+def exist_user(email):
+    try:
+        if Customer.query.filter(Patient.email == email).first():
+            return True
+        return False
+    except Exception as ex:
+        print(ex)
+
+
+def hmac_sha256(data):
+    return hmac.new(app.secret_key.encode('utf-8'),
+                    data.encode('utf-8'),
+                    hashlib.sha256).hexdigest()
