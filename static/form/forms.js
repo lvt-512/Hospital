@@ -7,8 +7,7 @@
         forms = {
             contactForm: $('#contactForm'),
             questionForm: $('#questionForm'),
-            bookingForm: $('#bookingForm'),
-            requestForm: $('#requestForm'),
+            bookForm: $('#bookForm'),
             loginForm: $('#loginForm'),
             registerForm: $('#registerForm')
         };
@@ -145,32 +144,23 @@
             }
 
             // booking form
-            if (forms.bookingForm.length) {
-                var $bookingForm = forms.bookingForm;
-                $bookingForm.validate({
+            if (forms.bookForm.length) {
+                var $bookForm = forms.bookForm;
+                $bookForm.validate({
                     rules: {
                         bookingname: {
                             required: true,
                             minlength: 2
                         },
-                        bookingmessages: {
-                            required: true,
-                            minlength: 20
-                        },
                         bookingemail: {
                             required: true,
                             email: true
                         }
-
                     },
                     messages: {
                         bookingname: {
                             required: "Please enter your name",
                             minlength: "Your name must consist of at least 2 characters"
-                        },
-                        bookingmessage: {
-                            required: "Please enter message",
-                            minlength: "Your message must consist of at least 20 characters"
                         },
                         bookingemail: {
                             required: "Please enter your email"
@@ -187,55 +177,6 @@
                             },
                             error: function error() {
                                 $('.errorform', $bookingForm).fadeIn();
-                            }
-                        });
-                    }
-                });
-            }
-
-            // request form
-            if (forms.requestForm.length) {
-                var $requestForm = forms.requestForm;
-                $requestForm.validate({
-                    rules: {
-                        requestname: {
-                            required: true,
-                            minlength: 2
-                        },
-                        requestmessages: {
-                            required: true,
-                            minlength: 20
-                        },
-                        requestemail: {
-                            required: true,
-                            email: true
-                        }
-
-                    },
-                    messages: {
-                        requestname: {
-                            required: "Please enter your name",
-                            minlength: "Your name must consist of at least 2 characters"
-                        },
-                        requestmessage: {
-                            required: "Please enter message",
-                            minlength: "Your message must consist of at least 20 characters"
-                        },
-                        requestemail: {
-                            required: "Please enter your email"
-                        }
-                    },
-                    submitHandler: function submitHandler(form) {
-                        $(form).ajaxSubmit({
-                            type: "POST",
-                            data: $(form).serialize(),
-                            url: "form/process-request.php",
-                            success: function success() {
-                                $('.successform', $requestForm).fadeIn();
-                                $requestForm.get(0).reset();
-                            },
-                            error: function error() {
-                                $('.errorform', $requestForm).fadeIn();
                             }
                         });
                     }

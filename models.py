@@ -39,7 +39,6 @@ class Customer(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False)
     email = Column(String(100), nullable=False, unique=True)
-    avatar = Column(String(500), nullable=True)
     questions = relationship('Question', backref='customer', lazy=True)
     books = relationship('Books', backref='customer', lazy=True)
 
@@ -52,6 +51,7 @@ class Customer(db.Model):
 
 class Patient(Customer):
     id = Column(Integer, ForeignKey(Customer.id), primary_key=True)
+    avatar = Column(String(500), nullable=True)
     clinical_records = relationship('ClinicalRecords', backref='patient', lazy=True)
     account = relationship('AccountPatient', backref='patient', lazy=True, uselist=False)
 

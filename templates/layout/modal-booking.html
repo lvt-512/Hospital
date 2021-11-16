@@ -7,7 +7,7 @@
             <div class="modal-body">
                 <div class="modal-form">
                     <h3>Book an Appointment</h3>
-                    <form class="mt-15" id="bookingForm" method="post" novalidate>
+                    <form class="mt-15" id="bookForm" method="post" novalidate>
                         <div class="successform">
                             <p>Your message was sent successfully!</p>
                         </div>
@@ -16,41 +16,17 @@
                         </div>
                         <div class="input-group">
 								<span>
-								<i class="icon-user"></i>
-							</span>
+                                    <i class="icon-user"></i>
+                                </span>
                             <input type="text" name="bookingname" class="form-control" autocomplete="off"
                                    placeholder="Your Name*"/>
                         </div>
-                        <div class="row row-xs-space mt-1">
-                            <div class="col-sm-6">
-                                <div class="input-group">
+                        <div class="input-group">
 										<span>
 											<i class="icon-email2"></i>
 										</span>
-                                    <input type="text" name="bookingemail" class="form-control" autocomplete="off"
-                                           placeholder="Your Email*"/>
-                                </div>
-                            </div>
-                            <div class="col-sm-6 mt-1 mt-sm-0">
-                                <div class="input-group">
-										<span>
-											<i class="icon-smartphone"></i>
-										</span>
-                                    <input type="text" name="bookingphone" class="form-control" autocomplete="off"
-                                           placeholder="Your Phone"/>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row row-xs-space mt-1">
-                            <div class="col-sm-6">
-                                <div class="input-group">
-										<span>
-											<i class="icon-birthday"></i>
-										</span>
-                                    <input type="text" name="bookingage" class="form-control" autocomplete="off"
-                                           placeholder="Your age"/>
-                                </div>
-                            </div>
+                            <input type="text" name="bookingemail" class="form-control" autocomplete="off"
+                                   placeholder="Your Email*"/>
                         </div>
                         <div class="input-group flex-nowrap mt-1">
 								<span>
@@ -70,7 +46,6 @@
                                        placeholder="Time">
                             </div>
                         </div>
-                        <textarea name="bookingmessage" class="form-control" placeholder="Your comment"></textarea>
                         <div class="text-right mt-2">
                             <button type="submit" class="btn btn-sm btn-hover-fill">Book now</button>
                         </div>

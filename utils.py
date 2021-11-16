@@ -2,15 +2,17 @@ import hashlib
 import hmac
 
 from my_clinic import app
-from my_clinic.models import Customer, Question, db, Patient
+from my_clinic.models import Customer, Question, db, Patient, Time, Books
 
 
 def add_questions(questions):
     if questions:
         try:
-            customer = Customer(name=questions["name"], email=questions["email"])
-            db.session.add(customer)
-            db.session.commit()
+            if not exist_user(questions["email"]):
+                customer = Customer(name=questions["name"], email=questions["email"])
+                db.session.add(customer)
+            else:
+                customer = Customer.query.filter(Customer.email == questions["email"]).first()
 
             question = Question(customer=customer, topic=questions["topic"], content=questions["message"])
             db.session.add(question)
@@ -18,7 +20,28 @@ def add_questions(questions):
 
             return True
         except Exception as ex:
-            print("RECEIPT ERROR: " + str(ex))
+            print("Question Error: " + str(ex))
+
+    return False
+
+
+def add_booking(books):
+    if books:
+        try:
+            if not exist_user(books["email"]):
+                customer = Customer(name=books["name"], email=books["email"])
+                db.session.add(customer)
+            else:
+                customer = Customer.query.filter(Customer.email == books["email"]).first()
+            time = Time.query.filter(Time.period == books["period"]).first()
+
+            books = Books(customer, time)
+            db.session.add(books)
+            db.session.commit()
+
+            return True
+        except Exception as ex:
+            print("Booking Error: " + str(ex))
 
     return False
 

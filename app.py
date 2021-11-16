@@ -160,9 +160,6 @@ def callback():
     else:
         return "User email not available or not verified by Google.", 400
 
-    # Check if email exist
-    account_patient = AccountPatient.query.filter(AccountPatient.email == users_email).first()
-
     # Doesn't exist? Add it to the database.
     if not utils.exist_user(users_email):
         # Create a user in your db with the information provided by Google
@@ -176,6 +173,8 @@ def callback():
         account_patient = AccountPatient(email=patient.email, password=password, patient=patient)
         db.session.add(account_patient)
         db.session.commit()
+    else:
+        account_patient = AccountPatient.query.filter(AccountPatient.email == users_email).first()
 
     # Begin user session by logging the user in
     login_user(account_patient)
@@ -192,8 +191,13 @@ def user_logout_exe():
     return redirect("/")
 
 
+@app.route("/api/user-register", methods=['post'])
+def user_register():
+    pass
+
+
 @app.route("/api/add-questions", methods=["post"])
-def add_questions_exe():
+def add_questions():
     questions = {
         "name": request.form.get("name"),
         "email": request.form.get("email"),
@@ -204,6 +208,18 @@ def add_questions_exe():
         return jsonify({"message": "add questions success!"}), 200
 
     return jsonify({"message": "can't add questions!"}), 404
+
+
+@app.route("/api/add-booking", methods=["post"])
+def add_booking():
+    books = {
+        "name": request.form.get("name"),
+        "email": request.form.get("email"),
+        "date": request.form.get("date"),
+        "period": request.form.get("period")
+    }
+
+    return 200
 
 
 if __name__ == '__main__':
