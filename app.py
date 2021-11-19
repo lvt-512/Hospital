@@ -5,12 +5,13 @@ import random
 import string
 
 import requests
+from flask_mail import Message
 
 import utils
 from flask_login import login_user, logout_user
 
-from my_clinic import app, my_login, client, GOOGLE_DISCOVERY_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, db
-from flask import render_template, request, redirect, jsonify
+from my_clinic import app, my_login, client, GOOGLE_DISCOVERY_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, db, mail
+from flask import render_template, request, redirect, jsonify, abort
 
 from my_clinic.models import AccountPatient, AccountAssistant, Account, Patient
 
@@ -169,6 +170,18 @@ def callback():
         # then create an account for this user
         password = ''.join(random.choice(string.ascii_letters) for _ in range(8))
         print(password)
+        # send password to user via Gmail
+        try:
+            msg = Message('Password for Login',
+                          recipients=[users_email],
+                          html=f"<div>This is your password: <b>{password}</b></div>")
+            with app.open_resource("%s/static/images/logo.png" % app.root_path) as logo:
+                msg.attach('medall.png', 'image/jpeg', logo.read())
+            mail.send(msg)
+        except Exception as ex:
+            print(ex)
+            abort(500)
+
         password = utils.hmac_sha256(password)
         account_patient = AccountPatient(email=patient.email, password=password, patient=patient)
         db.session.add(account_patient)

@@ -13718,7 +13718,7 @@ body.noScroll {
     border: 1px solid rgba(255, 255, 255, .5);
     border-radius: 30px;
     transition: 0.2s;
-    cursor: pointer;
+    cursor: pointer!important;
     text-decoration: none!important;
 }
 
@@ -13726,7 +13726,7 @@ body.noScroll {
     display: none;
 }
 
-.dropdown:hover .header-user {
+.dropdown:hover .header-user, .dropdown.show .header-user {
     border: 2px solid #1e76bd;
     box-shadow: 0 -5px 5px rgba(255, 255, 255, 0.05),
     inset 0 -5px 5px rgba(255, 255, 255, 0.05),
@@ -13749,10 +13749,32 @@ body.noScroll {
 }
 
 .header-user + .dropdown-menu{
-    border: 1px solid #1e76bd;
     border-radius: 5px;
-    overflow: hidden;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, .2)!important;
+    box-shadow: rgba(0, 0, 0, 0.4) 0 2px 4px,
+                rgba(0, 0, 0, 0.3) 0 7px 13px -3px,
+                rgba(0, 0, 0, 0.2) 0 -3px 0 inset!important;
+    transform: translate3d(3px, 48px, 0px)!important;
+    right: 0!important;
+    left: unset!important;
+}
+
+.header-user + .dropdown-menu:after {
+    content: "";
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    transform: rotate(45deg);
+    background: #fff;
+    top: -7px;
+    right: 22px;
+}
+
+.header-user + .dropdown-menu:before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    width: 100%;
+    height: 10px;
 }
 
 .header-user + .dropdown-menu li .dropdown-item{
@@ -13762,7 +13784,7 @@ body.noScroll {
     letter-spacing: 0.5px;
 }
 
-.header-user + .dropdown-menu li:hover .dropdown-item{
+.header-user + .dropdown-menu:hover li:hover .dropdown-item{
     font-weight: 600;
 }
 

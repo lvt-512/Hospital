@@ -12,22 +12,19 @@
     <body>
     <div class="container" id="container">
         <div class="form-container sign-up-container">
-            <form action="#">
-                <h1>Create Account</h1>
-                <div class="social-container">
-                    <a href="#" class="social f"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social g"><i class="fab fa-google-plus-g"></i></a>
-                    <a href="#" class="social in"><i class="fab fa-linkedin-in"></i></a>
-                </div>
-                <span>or use your email for registration</span>
+            <form id="registerForm" method="post">
+                <h2>Create An Account</h2>
                 <label>
-                    <input type="text" placeholder="Name"/>
+                    <input type="text" name="name" placeholder="Name"/>
                 </label>
                 <label>
-                    <input type="text" placeholder="Email"/>
+                    <input type="text" name="email" placeholder="Email"/>
                 </label>
                 <label>
-                    <input type="password" placeholder="Password"/>
+                    <input type="password" name="password" placeholder="Password"/>
+                </label>
+                <label>
+                    <input type="password" name="confirmPassword" placeholder="Confirm Password"/>
                 </label>
                 <button>Sign Up</button>
             </form>

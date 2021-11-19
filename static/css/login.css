@@ -266,3 +266,17 @@ input {
     background-color: #0077b5;
     color: #fff;
 }
+
+h2 {
+    position: relative;
+}
+h2:before {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    height: 3px;
+    background: #1e76bd;
+}

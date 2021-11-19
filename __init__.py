@@ -4,6 +4,7 @@ from flask_admin import Admin
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from oauthlib.oauth2 import WebApplicationClient
+from flask_mail import Mail
 
 # If your server is not parametrized to allow HTTPS,
 # the fetch_token method will raise an "oauthlib.oauth2.rfc6749.errors.InsecureTransportError".
@@ -13,6 +14,14 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:tuan0512@localhost/clinic_db?charset=utf8mb4"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 app.secret_key = "my@clinic.com"
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USERNAME'] = 'temporaryleo0512@gmail.com'
+app.config['MAIL_PASSWORD'] = 'tuan0512@'
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_DEFAULT_SENDER'] = ('MedAll', 'temporaryleo0512@gmail.com')
 
 # Configuration
 GOOGLE_CLIENT_ID = "919352421263-e18mqjhotmb6l176kflviroomrbbd5qd.apps.googleusercontent.com"
@@ -26,3 +35,4 @@ admin = Admin(app=app, name='CLINIC', template_mode='bootstrap4')
 my_login = LoginManager(app)
 # OAuth 2 client setup
 client = WebApplicationClient(GOOGLE_CLIENT_ID)
+mail = Mail(app)
