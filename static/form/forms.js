@@ -196,7 +196,7 @@
                             required: true
                         }
                     },
-                    message: {
+                    messages: {
                         email: {
                             required: "Please enter your email"
                         },
@@ -212,7 +212,7 @@
                             success: function success(data, textStatus, jqXHR) {
                                 window.location.href = data.redirect;
                             },
-                            error: function error(jqXHR, textStatus, errorThrown ) {
+                            error: function error(jqXHR, textStatus, errorThrown) {
                                 alert(textStatus + "\n" + jqXHR.responseJSON.message);
                             }
                         });
@@ -221,8 +221,68 @@
             }
 
             // register form
-            if (forms.registerForm.length){}
+            if (forms.registerForm.length) {
+                var $registerForm = forms.registerForm;
+                $registerForm.validate({
+                    rules: {
+                        registerName: {
+                            required: true
+                        },
+                        registerEmail: {
+                            required: true,
+                            email: true,
+                            remote: {
+                                url: '/api/validate-email',
+                                type: "post",
+                                data:
+                                    {
+                                        email: function () {
+                                            return $('#registerForm :input[name="email"]').val();
+                                        }
+                                    }
+                            }
+                        },
+                        registerPassword: {
+                            required: true,
+                            minlength: 8
+                        },
+                        registerConfirmPassword: {
+                            required: true,
+                            equalTo: registerPassword,
+                        }
+                    },
+                    messages: {
+                        registerName: {
+                            required: "Please enter your name"
+                        },
+                        registerEmail: {
+                            required: "Please enter your email",
+                            remote: jQuery.validator.format("{0} is already taken.")
+                        },
+                        registerPassword: {
+                            required: "Please enter your password",
+                            minlength: "your password must be at least 8 characters"
+                        },
+                        registerConfirmPassword: {
+                            required: "Confirm your password",
+                            equalTo: "Passwords must match."
+                        }
+                    },
+                    submitHandler: function (form) {
+                        $(form).ajaxSubmit({
+                            type: "POST",
+                            data: $(form).serialize(),
+                            url: "/user-register",
+                            success: function success(data, textStatus, jqXHR) {
+                                location.reload();
+                            },
+                            error: function error(jqXHR, textStatus, errorThrown) {
+                                alert(textStatus + "\n" + jqXHR.responseJSON.message);
+                            }
+                        })
+                    }
+                });
+            }
         }
     );
-
 })(jQuery);

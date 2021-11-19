@@ -13756,17 +13756,8 @@ body.noScroll {
     transform: translate3d(3px, 48px, 0px)!important;
     right: 0!important;
     left: unset!important;
-}
-
-.header-user + .dropdown-menu:after {
-    content: "";
-    position: absolute;
-    width: 15px;
-    height: 15px;
-    transform: rotate(45deg);
-    background: #fff;
-    top: -7px;
-    right: 22px;
+    overflow: hidden;
+    border-top: 1px solid #1e76bd;
 }
 
 .header-user + .dropdown-menu:before {

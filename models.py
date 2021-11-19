@@ -79,7 +79,7 @@ class Advisory(db.Model):
 
 class Account(db.Model, UserMixin):
     id = Column(Integer, primary_key=True, autoincrement=True)
-    active = Column(Boolean, default=True)
+    active = Column(Boolean, default=False)
     joined_date = Column(DateTime, default=datetime.now())
     email = Column(String(50), nullable=False, unique=True)
     password = Column(String(100), nullable=False)

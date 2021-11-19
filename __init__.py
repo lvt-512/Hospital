@@ -3,6 +3,7 @@ from flask import Flask
 from flask_admin import Admin
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
+from itsdangerous import URLSafeTimedSerializer
 from oauthlib.oauth2 import WebApplicationClient
 from flask_mail import Mail
 
@@ -33,6 +34,6 @@ GOOGLE_DISCOVERY_URL = (
 db = SQLAlchemy(app=app)
 admin = Admin(app=app, name='CLINIC', template_mode='bootstrap4')
 my_login = LoginManager(app)
-# OAuth 2 client setup
-client = WebApplicationClient(GOOGLE_CLIENT_ID)
+client = WebApplicationClient(GOOGLE_CLIENT_ID)  # OAuth 2 client setup
 mail = Mail(app)
+s = URLSafeTimedSerializer(app.secret_key)

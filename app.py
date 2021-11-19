@@ -6,11 +6,12 @@ import string
 
 import requests
 from flask_mail import Message
+from itsdangerous import SignatureExpired
 
 import utils
 from flask_login import login_user, logout_user
 
-from my_clinic import app, my_login, client, GOOGLE_DISCOVERY_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, db, mail
+from my_clinic import app, my_login, client, GOOGLE_DISCOVERY_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, db, mail, s
 from flask import render_template, request, redirect, jsonify, abort
 
 from my_clinic.models import AccountPatient, AccountAssistant, Account, Patient
@@ -88,8 +89,14 @@ def user_login_exe():
                                     AccountPatient.password == password).first()
 
         if user:
-            login_user(user)
-            return jsonify({"redirect": request.args.get("next", "/")}), 200
+            if user.active:
+                login_user(user)
+                return jsonify({"redirect": request.args.get("next", "/")}), 200
+            else:
+                if utils.email_verification(email):
+                    return jsonify({"message": "You have to be ACTIVE for your email!"}), 406  # Not Acceptable
+
+                return jsonify({"message": "The system has some errors!. PLease try later"})
 
         return jsonify({"message": "Incorrect username or password!"}), 401  # Unauthorized
     else:
@@ -183,7 +190,7 @@ def callback():
             abort(500)
 
         password = utils.hmac_sha256(password)
-        account_patient = AccountPatient(email=patient.email, password=password, patient=patient)
+        account_patient = AccountPatient(active=True, email=patient.email, password=password, patient=patient)
         db.session.add(account_patient)
         db.session.commit()
     else:
@@ -204,9 +211,40 @@ def user_logout_exe():
     return redirect("/")
 
 
-@app.route("/api/user-register", methods=['post'])
+@app.route("/api/validate-email", methods=["post"])
+def validate_email():
+    email = request.values["registerEmail"]
+    user_email = Account.query.filter(Account.email == email).first()
+    if user_email:
+        return jsonify(False)
+    return jsonify(True)
+
+
+@app.route("/user-register", methods=['post'])
 def user_register():
-    pass
+    # default avatar
+    avatar = "https://res.cloudinary.com/dtsahwrtk/image/upload/v1635424275/samples/people/smiling-man.jpg"
+
+    data = request.form.copy()
+    del data["confirm-password"]
+
+    data["avatar"] = avatar
+
+    if utils.add_user(**data):
+        return 200  # OK
+    else:
+        return jsonify({"message": "Data has some problems! Maybe."}), 404
+
+
+@app.route("/user-register/complete")
+def complete_registration():
+    try:
+        token = request.args.get("token")
+        email = s.loads(token, salt="email-verification", max_age=30)  # max_age: milliseconds
+        Account.query.filter(AccountPatient.email == email).first().active = True
+        return "<h1>Your Email has been verified</h1>"
+    except SignatureExpired:
+        return "<h1>The token is expired</h1>"
 
 
 @app.route("/api/add-questions", methods=["post"])
