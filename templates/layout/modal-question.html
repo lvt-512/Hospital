@@ -14,6 +14,7 @@
                         <div class="errorform">
                             <p>Something went wrong, try refreshing and submitting the form again.</p>
                         </div>
+                        {% if not current_user.is_authenticated %}
                         <div class="input-group">
 								<span>
 								<i class="icon-user"></i>
@@ -28,6 +29,7 @@
                             <input type="text" name="email" class="form-control" autocomplete="off"
                                    placeholder="Your Email*"/>
                         </div>
+                        {% endif %}
                         <div class="input-group">
                             <input style="padding: 8px 12px!important;" type="text" name="topic" class="form-control" autocomplete="off"
                                    placeholder="Topic"/>

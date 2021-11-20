@@ -46,12 +46,14 @@
                             <div class="errorform">
                                 <p>Something went wrong, try refreshing and submitting the form again.</p>
                             </div>
+                            {% if not current_user.is_authenticated %}
                             <div>
                                 <input type="text" class="form-control" name="name" placeholder="Your name*">
                             </div>
                             <div class="mt-15">
                                 <input type="text" class="form-control" name="email" placeholder="Email*">
                             </div>
+                            {% endif %}
                             <div class="mt-15">
                                 <input type="text" class="form-control" name="topic" placeholder="Topic">
                             </div>

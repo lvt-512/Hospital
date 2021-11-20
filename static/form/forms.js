@@ -237,7 +237,7 @@
                                 data:
                                     {
                                         email: function () {
-                                            return $('#registerForm :input[name="email"]').val();
+                                            return $('#registerForm :input[name="registerEmail"]').val();
                                         }
                                     }
                             }
@@ -274,6 +274,7 @@
                             data: $(form).serialize(),
                             url: "/user-register",
                             success: function success(data, textStatus, jqXHR) {
+                                alert(data.message);
                                 location.reload();
                             },
                             error: function error(jqXHR, textStatus, errorThrown) {

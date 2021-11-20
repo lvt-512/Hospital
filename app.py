@@ -9,7 +9,7 @@ from flask_mail import Message
 from itsdangerous import SignatureExpired
 
 import utils
-from flask_login import login_user, logout_user
+from flask_login import login_user, logout_user, current_user
 
 from my_clinic import app, my_login, client, GOOGLE_DISCOVERY_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, db, mail, s
 from flask import render_template, request, redirect, jsonify, abort
@@ -222,16 +222,16 @@ def validate_email():
 
 @app.route("/user-register", methods=['post'])
 def user_register():
-    # default avatar
-    avatar = "https://res.cloudinary.com/dtsahwrtk/image/upload/v1635424275/samples/people/smiling-man.jpg"
-
-    data = request.form.copy()
-    del data["confirm-password"]
-
-    data["avatar"] = avatar
+    data = {
+        "name": request.form.get("registerName"),
+        "email": request.form.get("registerEmail"),
+        "password": request.form.get("registerPassword"),
+        # default avatar
+        "avatar": "https://res.cloudinary.com/dtsahwrtk/image/upload/v1635424275/samples/people/smiling-man.jpg"
+    }
 
     if utils.add_user(**data):
-        return 200  # OK
+        return jsonify({"message": "Create Account successful!!!"}), 200  # OK
     else:
         return jsonify({"message": "Data has some problems! Maybe."}), 404
 
@@ -241,7 +241,10 @@ def complete_registration():
     try:
         token = request.args.get("token")
         email = s.loads(token, salt="email-verification", max_age=30)  # max_age: milliseconds
-        Account.query.filter(AccountPatient.email == email).first().active = True
+        user = Account.query.filter(AccountPatient.email == email).first()
+        user.active = True
+        db.session.add(user)
+        db.session.commit()
         return "<h1>Your Email has been verified</h1>"
     except SignatureExpired:
         return "<h1>The token is expired</h1>"
@@ -250,12 +253,12 @@ def complete_registration():
 @app.route("/api/add-questions", methods=["post"])
 def add_questions():
     questions = {
-        "name": request.form.get("name"),
-        "email": request.form.get("email"),
+        "name": request.form.get("name", current_user.patient.name),
+        "email": request.form.get("email", current_user.patient.email),
         "topic": request.form.get("topic"),
-        "message": request.form.get("message"),
+        "message": request.form.get("message")
     }
-    if utils.add_questions(questions):
+    if utils.add_questions(**questions):
         return jsonify({"message": "add questions success!"}), 200
 
     return jsonify({"message": "can't add questions!"}), 404

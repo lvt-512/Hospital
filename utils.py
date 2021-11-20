@@ -1,6 +1,5 @@
 import hashlib
 import hmac
-import json
 
 from flask import url_for
 from flask_mail import Message
@@ -9,50 +8,50 @@ from my_clinic import app, mail, s
 from my_clinic.models import Customer, Question, db, Patient, Time, Books, AccountPatient
 
 
-def add_questions(questions):
-    if questions:
-        try:
-            if not exist_user(questions["email"]):
-                customer = Customer(name=questions["name"], email=questions["email"])
-                db.session.add(customer)
-            else:
-                customer = Customer.query.filter(Customer.email == questions["email"]).first()
+def add_questions(name, email, topic, message):
+    try:
+        if not exist_user(email):
+            customer = Customer(name=name, email=email)
+            db.session.add(customer)
+        else:
+            customer = Customer.query.filter(Customer.email == email).first()
 
-            question = Question(customer=customer, topic=questions["topic"], content=questions["message"])
-            db.session.add(question)
-            db.session.commit()
+        question = Question(customer=customer, topic=topic, content=message)
+        db.session.add(question)
+        db.session.commit()
 
-            return True
-        except Exception as ex:
-            print("Question Error: " + str(ex))
-
-    return False
+        return True
+    except Exception as ex:
+        print("Question Error: " + str(ex))
+        return False
 
 
-def add_booking(books):
-    if books:
-        try:
-            if not exist_user(books["email"]):
-                customer = Customer(name=books["name"], email=books["email"])
-                db.session.add(customer)
-            else:
-                customer = Customer.query.filter(Customer.email == books["email"]).first()
-            time = Time.query.filter(Time.period == books["period"]).first()
+def add_booking(name, email, date, period):
+    try:
+        if not exist_user(email):
+            customer = Customer(name=name, email=email)
+            db.session.add(customer)
+        else:
+            customer = Customer.query.filter(Customer.email == email).first()
 
-            books = Books(customer, time)
-            db.session.add(books)
-            db.session.commit()
+        time = Time.query.filter(Time.period == period).first()
 
-            return True
-        except Exception as ex:
-            print("Booking Error: " + str(ex))
+        books = Books(booked_date=date, customer=customer, time=time)
+        db.session.add(books)
+        db.session.commit()
 
-    return False
+        return True
+    except Exception as ex:
+        print("Booking Error: " + str(ex))
+        return False
 
 
 def add_user(name, email, password, avatar=None):
-    patient = Patient(name=name, email=email, avatar=avatar)
-    db.session.add(patient)
+    if not exist_user(email):
+        patient = Patient(name=name, email=email, avatar=avatar)
+        db.session.add(patient)
+    else:
+        patient = Customer.query.filter(Patient.email == email).first()
 
     password = hmac_sha256(password)
     account_patient = AccountPatient(email=patient.email, password=password, patient=patient)
@@ -68,7 +67,7 @@ def add_user(name, email, password, avatar=None):
 
 def exist_user(email):
     try:
-        if Customer.query.filter(Patient.email == email).first():
+        if Customer.query.filter(Customer.email == email).first():
             return True
         return False
     except Exception as ex:
