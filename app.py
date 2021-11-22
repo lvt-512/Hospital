@@ -253,8 +253,8 @@ def complete_registration():
 @app.route("/api/add-questions", methods=["post"])
 def add_questions():
     questions = {
-        "name": request.form.get("name", current_user.patient.name),
-        "email": request.form.get("email", current_user.patient.email),
+        "name": request.form.get("name", current_user.patient.name if current_user.is_authenticated else ""),
+        "email": request.form.get("email", current_user.patient.email if current_user.is_authenticated else ""),
         "topic": request.form.get("topic"),
         "message": request.form.get("message")
     }

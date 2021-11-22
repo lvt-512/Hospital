@@ -51,7 +51,10 @@ def add_user(name, email, password, avatar=None):
         patient = Patient(name=name, email=email, avatar=avatar)
         db.session.add(patient)
     else:
-        patient = Customer.query.filter(Patient.email == email).first()
+        if Customer.query.filter(Patient.email == email).first():
+            patient = Customer.query.filter(Patient.email == email).first()
+        else:
+            pass
 
     password = hmac_sha256(password)
     account_patient = AccountPatient(email=patient.email, password=password, patient=patient)
