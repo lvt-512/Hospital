@@ -39,8 +39,8 @@ class Customer(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False)
     email = Column(String(100), nullable=False, unique=True)
-    questions = relationship('Question', backref='customer', lazy=True)
-    books = relationship('Books', backref='customer', lazy=True)
+    questions = relationship('Question', cascade="all,delete", backref='customer', lazy=True)
+    books = relationship('Books', cascade="all,delete", backref='customer', lazy=True)
 
     type = Column(String(50))
     __mapper_args__ = {
@@ -50,7 +50,7 @@ class Customer(db.Model):
 
 
 class Patient(Customer):
-    id = Column(Integer, ForeignKey(Customer.id), primary_key=True)
+    id = Column(Integer, ForeignKey(Customer.id, onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
     avatar = Column(String(500), nullable=True)
     clinical_records = relationship('ClinicalRecords', backref='patient', lazy=True)
     account = relationship('AccountPatient', backref='patient', lazy=True, uselist=False)
@@ -63,7 +63,7 @@ class Patient(Customer):
 class Question(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     sent_date = Column(DateTime, default=datetime.now())
-    customer_id = Column(Integer, ForeignKey(Customer.id), nullable=False)
+    customer_id = Column(Integer, ForeignKey(Customer.id, onupdate="CASCADE", ondelete="CASCADE"), nullable=False)
     topic = Column(String(50), nullable=False)
     content = Column(String(1000), nullable=False)
     Answer = relationship('Advisory', backref='question', lazy=True)
@@ -155,7 +155,7 @@ class Time(db.Model):
 class Books(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     booked_date = Column(DateTime, default=datetime.now())
-    customer_id = Column(Integer, ForeignKey(Customer.id), nullable=False)
+    customer_id = Column(Integer, ForeignKey(Customer.id,  onupdate="CASCADE", ondelete="CASCADE"), nullable=False)
     time_id = Column(Integer, ForeignKey(Time.id), nullable=False)
 
 

@@ -1,20 +1,19 @@
+import datetime
 import hashlib
 import hmac
 import json
-import random
-import string
 
 import requests
-from flask_mail import Message
 from itsdangerous import SignatureExpired
 
 import utils
 from flask_login import login_user, logout_user, current_user
 
-from my_clinic import app, my_login, client, GOOGLE_DISCOVERY_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, db, mail, s
-from flask import render_template, request, redirect, jsonify, abort
+from my_clinic import app, my_login, client \
+    , GOOGLE_DISCOVERY_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, db, s, BOOKING_MAX
+from flask import render_template, request, redirect, jsonify
 
-from my_clinic.models import AccountPatient, AccountAssistant, Account, Patient
+from my_clinic.models import AccountPatient, AccountAssistant, Account, Patient, Customer, Time
 
 
 @app.route('/')
@@ -29,7 +28,7 @@ def about_us():
 
 @app.route('/schedule')
 def schedule():
-    return render_template('schedule.html')
+    return render_template('schedule.html', booking_max=BOOKING_MAX)
 
 
 @app.route('/question')
@@ -168,33 +167,25 @@ def callback():
     else:
         return "User email not available or not verified by Google.", 400
 
-    # Doesn't exist? Add it to the database.
-    if not utils.exist_user(users_email):
-        # Create a user in your db with the information provided by Google
-        patient = Patient(name=users_name, email=users_email, avatar=picture)
-        db.session.add(patient)
+    if AccountPatient.query.filter(AccountPatient.email == users_email).first():
+        account_patient = AccountPatient.query.filter(AccountPatient.email == users_email).first()
+    else:
+        # Doesn't exist? Add it to the database.
+        if not utils.exist_user(users_email):
+            # Create a user in your db with the information provided by Google
+            patient = Patient(name=users_name, email=users_email, avatar=picture)
+            db.session.add(patient)
+        else:
+            if Patient.query.filter(Patient.email == users_email).first():
+                patient = Patient.query.filter(Patient.email == users_email).first()
+            else:
+                customer = Customer.query.filter(Customer.email == users_email).first()
+                patient = utils.customerToPatient(customer, avatar=picture)
 
-        # then create an account for this user
-        password = ''.join(random.choice(string.ascii_letters) for _ in range(8))
-        print(password)
-        # send password to user via Gmail
-        try:
-            msg = Message('Password for Login',
-                          recipients=[users_email],
-                          html=f"<div>This is your password: <b>{password}</b></div>")
-            with app.open_resource("%s/static/images/logo.png" % app.root_path) as logo:
-                msg.attach('medall.png', 'image/jpeg', logo.read())
-            mail.send(msg)
-        except Exception as ex:
-            print(ex)
-            abort(500)
-
-        password = utils.hmac_sha256(password)
+        password = utils.create_password(users_email)
         account_patient = AccountPatient(active=True, email=patient.email, password=password, patient=patient)
         db.session.add(account_patient)
         db.session.commit()
-    else:
-        account_patient = AccountPatient.query.filter(AccountPatient.email == users_email).first()
 
     # Begin user session by logging the user in
     login_user(account_patient)
@@ -220,6 +211,24 @@ def validate_email():
     return jsonify(True)
 
 
+@app.route("/api/check-booking-date", methods=["post"])
+def check_booking_date():
+    date = request.form.get("bookingdate")
+    if datetime.datetime.strptime(date, '%d/%m/%Y') > datetime.datetime.now():
+        return jsonify(True)
+    return jsonify(False)
+
+
+@app.route("/api/check-booking-time", methods=["post"])
+def check_booking_time():
+    time = request.form.get("bookingtime")
+    time = datetime.datetime.strptime(time, '%I:%M %p').time()
+    if time < datetime.time(8, 0, 0) or time > datetime.time(19, 0, 0) \
+            or datetime.time(13, 0, 0) > time > datetime.time(12, 0, 0):
+        return jsonify(False)
+    return jsonify(True)
+
+
 @app.route("/user-register", methods=['post'])
 def user_register():
     data = {
@@ -240,7 +249,7 @@ def user_register():
 def complete_registration():
     try:
         token = request.args.get("token")
-        email = s.loads(token, salt="email-verification", max_age=30)  # max_age: milliseconds
+        email = s.loads(token, salt="email-verification", max_age=60)  # max_age: milliseconds
         user = Account.query.filter(AccountPatient.email == email).first()
         user.active = True
         db.session.add(user)
@@ -267,13 +276,27 @@ def add_questions():
 @app.route("/api/add-booking", methods=["post"])
 def add_booking():
     books = {
-        "name": request.form.get("name"),
-        "email": request.form.get("email"),
-        "date": request.form.get("date"),
-        "period": request.form.get("period")
+        "name": request.form.get("bookingname", current_user.patient.name if current_user.is_authenticated else ""),
+        "email": request.form.get("bookingemail", current_user.patient.name if current_user.is_authenticated else ""),
+        "date": request.form.get("bookingdate"),
+        "period": request.form.get("bookingtime")
     }
 
-    return 200
+    books["date"] = datetime.datetime.strptime(books["date"], '%d/%m/%Y')
+
+    period = datetime.datetime.strptime(request.form.get("bookingtime"), '%I:%M %p').hour
+    period = f"{period:02d}:00 - {period + 1:02d}:00"
+    time = Time.query.filter(Time.period == period).first()
+
+    if utils.getAmoutofPeople(time, books["date"]) == BOOKING_MAX:
+        return jsonify({"message": "Maximum of people!"}), 400
+
+    books["time"] = time
+
+    if utils.add_booking(**books):
+        return jsonify({"message": "booking successfully!"}), 200
+
+    return jsonify({"message": "can't add booking!"}), 404
 
 
 if __name__ == '__main__':

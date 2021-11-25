@@ -31,9 +31,12 @@ GOOGLE_DISCOVERY_URL = (
     "https://accounts.google.com/.well-known/openid-configuration"
 )
 
+BOOKING_MAX = 2
+
 db = SQLAlchemy(app=app)
 admin = Admin(app=app, name='CLINIC', template_mode='bootstrap4')
 my_login = LoginManager(app)
 client = WebApplicationClient(GOOGLE_CLIENT_ID)  # OAuth 2 client setup
 mail = Mail(app)
 s = URLSafeTimedSerializer(app.secret_key)
+

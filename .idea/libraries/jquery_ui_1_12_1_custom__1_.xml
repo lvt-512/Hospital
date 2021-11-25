@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="jquery-ui-1.12.1.custom (1)">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/static/vendor/jquery-ui/jquery-ui-1.12.1.custom (1).zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

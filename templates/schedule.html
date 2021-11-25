@@ -37,267 +37,36 @@
                                 <div class="timeline-top-info"><span>Hours</span></div>
                                 <ul>
                                     {% for i in range(8, 20) %}
-                                    <li><span>{{ '{:02d}:00'.format(i) }}</span></li>
+                                        <li><span>{{ '{:02d}:00'.format(i) }}</span></li>
                                     {% endfor %}
                                 </ul>
                             </div>
                             <div class="events">
                                 <ul>
                                     {% for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
-                                    <li class="events-group">
-                                        <div class="schedule-top-info"><span>{{ day }}</span></div>
-                                        <ul>
-                                            <li class="doctor-card" data-start="08:00" data-end="11:00"
-                                                data-event="event-1">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo"><img
-                                                            src="{{ url_for('static', filename='images/content/doctop-01-sm.jpg') }}"
-                                                            alt=""></div>
-                                                    <div class="doctor-name">Dr. Pamela Knaack</div>
-                                                    <div class="doctor-position">Dental Hygienist</div>
-                                                </a>
-                                            </li>
-                                            <li class="doctor-card" data-start="11:00" data-end="14:00"
-                                                data-event="event-2">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo"><img
-                                                            src="{{ url_for('static', filename='images/content/doctop-02-sm.jpg') }}"
-                                                            alt=""></div>
-                                                    <div class="doctor-name">Dr. Gerald Gleaves</div>
-                                                    <div class="doctor-position">General Dentist</div>
-                                                </a>
-                                            </li>
-                                            <li class="doctor-card" data-start="15:00" data-end="17:00"
-                                                data-event="event-3">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo d-lg-none"><img
-                                                            src="images/content/doctop-04-sm.jpg" alt=""></div>
-                                                    <div class="doctor-name">Dr. Frank Bigham</div>
-                                                    <div class="doctor-position">Associate Dentist</div>
-                                                </a>
-                                            </li>
-                                            <li class="doctor-card before-last-time" data-start="17:00" data-end="20:00"
-                                                data-event="event-4">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo"><img src="{{ url_for('static', filename='images/content/doctop-03-sm.jpg') }}"
-                                                                                   alt=""></div>
-                                                    <div class="doctor-name">Dr. Billy Logan</div>
-                                                    <div class="doctor-position">Cosmetic Dentist</div>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </li>
+                                        <li class="events-group">
+                                            <div class="schedule-top-info"><span>{{ day }}</span></div>
+                                            {% if day != 'Sunday' %}
+                                                <ul>
+                                                    {% for i in range(8, 20) %}
+                                                        {% if not i in [12, 19] %}
+                                                            <li class="doctor-card"
+                                                                data-start="{{ '{:02d}:00'.format(i) }}"
+                                                                data-end="{{ '{:02d}:00'.format(i + 1) }}"
+                                                                data-event="event-1"
+                                                                onclick="booking(this, '{{ day }}')"
+                                                            >
+                                                                <a href="#" data-toggle="modal"
+                                                                   data-target="#modalBookingForm">
+                                                                    0/{{ booking_max }}
+                                                                </a>
+                                                            </li>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endif %}
+                                        </li>
                                     {% endfor %}
-                                    <li class="events-group">
-                                        <div class="schedule-top-info"><span>Tuesday</span></div>
-                                        <ul>
-                                            <li class="doctor-card" data-start="8:00" data-end="13:00"
-                                                data-event="event-2">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo"><img
-                                                            src="{{ url_for('static', filename='images/content/doctop-02-sm.jpg') }}"
-                                                            alt=""></div>
-                                                    <div class="doctor-name">Dr. Gerald Gleaves</div>
-                                                    <div class="doctor-position">General Dentist</div>
-                                                </a>
-                                            </li>
-                                            <li class="doctor-card" data-start="13:00" data-end="18:00"
-                                                data-event="event-1">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo"><img
-                                                            src="{{ url_for('static', filename='images/content/doctop-01-sm.jpg') }}"
-                                                            alt=""></div>
-                                                    <div class="doctor-name">Dr. Pamela Knaack</div>
-                                                    <div class="doctor-position">Dental Hygienist</div>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li class="events-group">
-                                        <div class="schedule-top-info"><span>Wednesday</span></div>
-                                        <ul>
-                                            <li class="doctor-card" data-start="08:00" data-end="12:00"
-                                                data-event="event-3">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo"><img
-                                                            src="{{ url_for('static', filename='images/content/doctop-04-sm.jpg') }}"
-                                                            alt=""></div>
-                                                    <div class="doctor-name">Dr. Frank Bigham</div>
-                                                    <div class="doctor-position">Associate Dentist</div>
-                                                </a>
-                                            </li>
-                                            <li class="doctor-card" data-start="12:00" data-end="14:00"
-                                                data-event="event-2">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo d-lg-none"><img
-                                                            src="{{ url_for('static', filename='images/content/doctop-02-sm.jpg') }}"
-                                                            alt=""></div>
-                                                    <div class="doctor-name">Dr. Gerald Gleaves</div>
-                                                    <div class="doctor-position">General Dentist</div>
-                                                </a>
-                                            </li>
-                                            <li class="doctor-card" data-start="14:00" data-end="18:00"
-                                                data-event="event-1">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo"><img
-                                                            src="{{ url_for('static', filename='images/content/doctop-01-sm.jpg') }}"
-                                                            alt=""></div>
-                                                    <div class="doctor-name">Dr. Pamela Knaack</div>
-                                                    <div class="doctor-position">Dental Hygienist</div>
-                                                </a>
-                                            </li>
-                                            <li class="doctor-card before-last-time" data-start="18:00" data-end="20:00"
-                                                data-event="event-4">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo d-lg-none"><img
-                                                            src="{{ url_for('static', filename='images/content/doctop-03-sm.jpg') }}"
-                                                            alt=""></div>
-                                                    <div class="doctor-name">Dr. Billy Logan</div>
-                                                    <div class="doctor-position">Cosmetic Dentist</div>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li class="events-group">
-                                        <div class="schedule-top-info"><span>Thursday</span></div>
-                                        <ul>
-                                            <li class="doctor-card" data-start="8:00" data-end="11:00"
-                                                data-event="event-1">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo"><img
-                                                            src="{{ url_for('static', filename='images/content/doctop-01-sm.jpg') }}"
-                                                            alt=""></div>
-                                                    <div class="doctor-name">Dr. Pamela Knaack</div>
-                                                    <div class="doctor-position">Dental Hygienist</div>
-                                                </a>
-                                            </li>
-                                            <li class="doctor-card" data-start="11:00" data-end="14:00"
-                                                data-event="event-2">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo"><img
-                                                            src="{{ url_for('static', filename='images/content/doctop-02-sm.jpg') }}"
-                                                            alt=""></div>
-                                                    <div class="doctor-name">Dr. Gerald Gleaves</div>
-                                                    <div class="doctor-position">General Dentist</div>
-                                                </a>
-                                            </li>
-                                            <li class="doctor-card d-lg-none" data-start="15:00" data-end="17:00"
-                                                data-event="event-3">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo"><img
-                                                            src="{{ url_for('static', filename='images/content/doctop-04-sm.jpg') }}"
-                                                            alt=""></div>
-                                                    <div class="doctor-name">Dr. Frank Bigham</div>
-                                                    <div class="doctor-position">Associate Dentist</div>
-                                                </a>
-                                            </li>
-                                            <li class="doctor-card before-last-time" data-start="17:00" data-end="20:00"
-                                                data-event="event-4">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo"><img
-                                                            src="{{ url_for('static', filename='images/content/doctop-04-sm.jpg') }}"
-                                                            alt=""></div>
-                                                    <div class="doctor-name">Dr. Billy Logan</div>
-                                                    <div class="doctor-position">Cosmetic Dentist</div>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li class="events-group">
-                                        <div class="schedule-top-info"><span>Friday</span></div>
-                                        <ul>
-                                            <li class="doctor-card" data-start="8:00" data-end="12:00"
-                                                data-event="event-2">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo"><img
-                                                            src="{{ url_for('static', filename='images/content/doctop-02-sm.jpg') }}"
-                                                            alt=""></div>
-                                                    <div class="doctor-name">Dr. Gerald Gleaves</div>
-                                                    <div class="doctor-position">General Dentist</div>
-                                                </a>
-                                            </li>
-                                            <li class="doctor-card" data-start="13:00" data-end="18:00"
-                                                data-event="event-1">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo"><img
-                                                            src="{{ url_for('static', filename='images/content/doctop-01-sm.jpg') }}"
-                                                            alt=""></div>
-                                                    <div class="doctor-name">Dr. Pamela Knaack</div>
-                                                    <div class="doctor-position">Dental Hygienist</div>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li class="events-group">
-                                        <div class="schedule-top-info"><span>Saturday</span></div>
-                                        <ul>
-                                            <li class="doctor-card" data-start="08:00" data-end="12:00"
-                                                data-event="event-3">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo"><img
-                                                            src="{{ url_for('static', filename='images/content/doctop-04-sm.jpg') }}"
-                                                            alt=""></div>
-                                                    <div class="doctor-name">Dr. Frank Bigham</div>
-                                                    <div class="doctor-position">Associate Dentist</div>
-                                                </a>
-                                            </li>
-                                            <li class="doctor-card" data-start="12:00" data-end="14:00"
-                                                data-event="event-2">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo d-lg-none"><img
-                                                            src="{{ url_for('static', filename='images/content/doctop-02-sm.jpg') }}"
-                                                            alt=""></div>
-                                                    <div class="doctor-name">Dr. Gerald Gleaves</div>
-                                                    <div class="doctor-position">General Dentist</div>
-                                                </a>
-                                            </li>
-                                            <li class="doctor-card" data-start="14:00" data-end="18:00"
-                                                data-event="event-1">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo"><img
-                                                            src="{{ url_for('static', filename='images/content/doctop-01-sm.jpg') }}"
-                                                            alt=""></div>
-                                                    <div class="doctor-name">Dr. Pamela Knaack</div>
-                                                    <div class="doctor-position">Dental Hygienist</div>
-                                                </a>
-                                            </li>
-                                            <li class="doctor-card before-last-time" data-start="18:00" data-end="20:00"
-                                                data-event="event-4">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo d-lg-none"><img
-                                                            src="{{ url_for('static', filename='images/content/doctop-04-sm.jpg') }}"
-                                                            alt=""></div>
-                                                    <div class="doctor-name">Dr. Billy Logan</div>
-                                                    <div class="doctor-position">Cosmetic Dentist</div>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                    <li class="events-group">
-                                        <div class="schedule-top-info"><span>Sunday</span></div>
-                                        <ul>
-                                            <li class="doctor-card" data-start="09:00" data-end="14:00"
-                                                data-event="event-3">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo"><img
-                                                            src="{{ url_for('static', filename='images/content/doctop-04-sm.jpg') }}"
-                                                            alt=""></div>
-                                                    <div class="doctor-name">Dr. Frank Bigham</div>
-                                                    <div class="doctor-position">Associate Dentist</div>
-                                                </a>
-                                            </li>
-                                            <li class="doctor-card" data-start="14:00" data-end="18:00"
-                                                data-event="event-2">
-                                                <a href="doctor-page.html">
-                                                    <div class="doctor-photo"><img
-                                                            src="{{ url_for('static', filename='images/content/doctop-02-sm.jpg') }}"
-                                                            alt=""></div>
-                                                    <div class="doctor-name">Dr. Gerald Gleaves</div>
-                                                    <div class="doctor-position">General Dentist</div>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -310,4 +79,39 @@
 {% endblock %}
 
 {% block modal %}
+    {% include 'layout/modal-booking.html' %}
+{% endblock %}
+
+{% block script %}
+    {{ super() }}
+    <script type="text/javascript">
+        const days = {'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4, 'Friday': 5, 'Saturday': 6, 'Sunday': 0}
+
+        function booking(obj, day) {
+            var booked_date = new Date();
+            var time = parseInt($(obj).data("start").substr(0, 2));
+
+            booked_date.setDate(booked_date.getDate() + (days[day] - booked_date.getDay()));
+
+            {#console.log($(obj).children('a').length)#}
+            var datetimepicker = $('.datetimepicker');
+            var timepicker = $('.timepicker');
+            datetimepicker.css("pointer-events", "none");
+            datetimepicker.css("color", "rgba(0,0,0,.5)");
+            datetimepicker.val(`${booked_date.getDate()}/${booked_date.getMonth()}/${booked_date.getFullYear()}`);
+            timepicker.val(`${time % 12}:00 ${time > 12 ? 'PM' : 'AM'}`);
+            timepicker.css("pointer-events", "none");
+            timepicker.css("color", "rgba(0,0,0,.5)");
+        }
+
+        var targetNode = document.getElementById('modalBookingForm');
+        var observer = new MutationObserver(function () {
+            if (targetNode.style.display === 'none') {
+                // doSomething
+                $('.datetimepicker').val('');
+                $('.timepicker').val('');
+            }
+        });
+        observer.observe(targetNode, {attributes: true, childList: true});
+    </script>
 {% endblock %}

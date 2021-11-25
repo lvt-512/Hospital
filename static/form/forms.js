@@ -155,6 +155,32 @@
                         bookingemail: {
                             required: true,
                             email: true
+                        },
+                        bookingdate: {
+                            required: true,
+                            remote: {
+                                url: '/api/check-booking-date',
+                                type: "post",
+                                data:
+                                    {
+                                        date: function () {
+                                            return $('.datetimepicker').val();
+                                        }
+                                    }
+                            }
+                        },
+                        bookingtime: {
+                            required: true,
+                            remote: {
+                                url: '/api/check-booking-time',
+                                type: "post",
+                                data:
+                                    {
+                                        time: function () {
+                                            return $('.timepicker').val();
+                                        }
+                                    }
+                            }
                         }
                     },
                     messages: {
@@ -164,6 +190,14 @@
                         },
                         bookingemail: {
                             required: "Please enter your email"
+                        },
+                        bookingdate: {
+                            required: "Please, choose date!",
+                            remote: "Invalid date!"
+                        },
+                        bookingtime: {
+                            required: "Please, choose time!",
+                            remote: "Invalid time!"
                         }
                     },
                     submitHandler: function submitHandler(form) {
@@ -172,11 +206,12 @@
                             data: $(form).serialize(),
                             url: "/api/add-booking",
                             success: function success() {
-                                $('.successform', $bookingForm).fadeIn();
-                                $bookingForm.get(0).reset();
+                                $('.successform', $bookForm).fadeIn();
+                                $bookForm.get(0).reset();
                             },
-                            error: function error() {
-                                $('.errorform', $bookingForm).fadeIn();
+                            error: function error(jqXHR, textStatus, errorThrown) {
+                                $('.errorform', $bookForm).fadeIn();
+                                alert(textStatus + "\n" + jqXHR.responseJSON.message);
                             }
                         });
                     }

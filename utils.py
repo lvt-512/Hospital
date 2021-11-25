@@ -1,11 +1,14 @@
 import hashlib
 import hmac
+import random
+import string
 
-from flask import url_for
+from flask import url_for, abort
 from flask_mail import Message
+from sqlalchemy import text
 
 from my_clinic import app, mail, s
-from my_clinic.models import Customer, Question, db, Patient, Time, Books, AccountPatient
+from my_clinic.models import Customer, Question, db, Patient, Books, AccountPatient
 
 
 def add_questions(name, email, topic, message):
@@ -26,15 +29,13 @@ def add_questions(name, email, topic, message):
         return False
 
 
-def add_booking(name, email, date, period):
+def add_booking(name, email, date, time):
     try:
         if not exist_user(email):
             customer = Customer(name=name, email=email)
             db.session.add(customer)
         else:
             customer = Customer.query.filter(Customer.email == email).first()
-
-        time = Time.query.filter(Time.period == period).first()
 
         books = Books(booked_date=date, customer=customer, time=time)
         db.session.add(books)
@@ -46,17 +47,18 @@ def add_booking(name, email, date, period):
         return False
 
 
-def add_user(name, email, password, avatar=None):
+def add_user(name, email, password, avatar=None, verification=True):
     if not exist_user(email):
         patient = Patient(name=name, email=email, avatar=avatar)
         db.session.add(patient)
     else:
-        if Customer.query.filter(Patient.email == email).first():
-            patient = Customer.query.filter(Patient.email == email).first()
+        if Patient.query.filter(Patient.email == email).first():
+            patient = Patient.query.filter(Patient.email == email).first()
         else:
-            pass
+            customer = Customer.query.filter(Customer.email == email).first()
+            patient = customerToPatient(customer, avatar)
 
-    password = hmac_sha256(password)
+    password = create_password(email, password)
     account_patient = AccountPatient(email=patient.email, password=password, patient=patient)
     db.session.add(account_patient)
 
@@ -66,6 +68,16 @@ def add_user(name, email, password, avatar=None):
         return True
 
     return False
+
+
+def customerToPatient(customer, avatar):
+    customer.type = 'patient'
+    db.session.add(customer)
+    sql = text("INSERT INTO patient VALUES (%s, '%s')" % (customer.id, avatar))
+    db.session.execute(sql)
+    db.session.commit()
+    patient = Patient.query.get(customer.id)
+    return patient
 
 
 def exist_user(email):
@@ -97,3 +109,32 @@ def email_verification(email):
     except Exception as ex:
         print(ex)
         return False
+
+
+def create_password(email, password=None):
+    if password is None:
+        # then create an account for this user
+        password = ''.join(random.choice(string.ascii_letters) for _ in range(8))
+        print(password)
+        # send password to user via Gmail
+        try:
+            msg = Message('Password for Login',
+                          recipients=[email],
+                          html=f"<div>This is your password: <b>{password}</b></div>")
+            with app.open_resource("%s/static/images/logo.png" % app.root_path) as logo:
+                msg.attach('medall.png', 'image/jpeg', logo.read())
+            mail.send(msg)
+        except Exception as ex:
+            print(ex)
+            abort(500)
+
+    return hmac_sha256(password)
+
+
+def getAmoutofPeople(time, date):
+    # Every period just have 2 people
+    count = 0
+    for book in time.books_times:
+        if book.booked_date == date:
+            count += 1
+    return count
