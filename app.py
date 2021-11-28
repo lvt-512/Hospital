@@ -278,8 +278,7 @@ def add_booking():
     books = {
         "name": request.form.get("bookingname", current_user.patient.name if current_user.is_authenticated else ""),
         "email": request.form.get("bookingemail", current_user.patient.name if current_user.is_authenticated else ""),
-        "date": request.form.get("bookingdate"),
-        "period": request.form.get("bookingtime")
+        "date": request.form.get("bookingdate")
     }
 
     books["date"] = datetime.datetime.strptime(books["date"], '%d/%m/%Y')
@@ -288,15 +287,36 @@ def add_booking():
     period = f"{period:02d}:00 - {period + 1:02d}:00"
     time = Time.query.filter(Time.period == period).first()
 
-    if utils.getAmoutofPeople(time, books["date"]) == BOOKING_MAX:
+    if utils.getAmountOfPeople(time, books["date"]) == BOOKING_MAX:
         return jsonify({"message": "Maximum of people!"}), 400
 
     books["time"] = time
 
     if utils.add_booking(**books):
-        return jsonify({"message": "booking successfully!"}), 200
+        return jsonify({
+            "message": "booking successfully!",
+            "amount": utils.getAmountOfPeople(time, books["date"])
+        }), 200
 
     return jsonify({"message": "can't add booking!"}), 404
+
+
+@app.route("/api/load-schedule")
+def load_schedule():
+    try:
+        time = int(request.args.get('bookingtime'))
+        period = f"{time:02d}:00 - {time + 1:02d}:00"
+        time = Time.query.filter(Time.period == period).first()
+
+        date = request.args.get('bookingdate')
+        date = datetime.datetime.strptime(date, '%d/%m/%Y')
+
+        amount = utils.getAmountOfPeople(time, date)
+
+        return jsonify({"amount": amount}), 200
+    except Exception as ex:
+        print(ex)
+        return jsonify({"message": "Error"}), 404
 
 
 if __name__ == '__main__':

@@ -53,11 +53,13 @@
                                                             <li class="doctor-card"
                                                                 data-start="{{ '{:02d}:00'.format(i) }}"
                                                                 data-end="{{ '{:02d}:00'.format(i + 1) }}"
+                                                                data-day="{{ day }}"
                                                                 data-event="event-1"
                                                                 onclick="booking(this, '{{ day }}')"
                                                             >
                                                                 <a href="#" data-toggle="modal"
-                                                                   data-target="#modalBookingForm">
+                                                                   data-target="#modalBookingForm"
+                                                                >
                                                                     0/{{ booking_max }}
                                                                 </a>
                                                             </li>
@@ -83,35 +85,11 @@
 {% endblock %}
 
 {% block script %}
-    {{ super() }}
-    <script type="text/javascript">
-        const days = {'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4, 'Friday': 5, 'Saturday': 6, 'Sunday': 0}
-
-        function booking(obj, day) {
-            var booked_date = new Date();
-            var time = parseInt($(obj).data("start").substr(0, 2));
-
-            booked_date.setDate(booked_date.getDate() + (days[day] - booked_date.getDay()));
-
-            {#console.log($(obj).children('a').length)#}
-            var datetimepicker = $('.datetimepicker');
-            var timepicker = $('.timepicker');
-            datetimepicker.css("pointer-events", "none");
-            datetimepicker.css("color", "rgba(0,0,0,.5)");
-            datetimepicker.val(`${booked_date.getDate()}/${booked_date.getMonth()}/${booked_date.getFullYear()}`);
-            timepicker.val(`${time % 12}:00 ${time > 12 ? 'PM' : 'AM'}`);
-            timepicker.css("pointer-events", "none");
-            timepicker.css("color", "rgba(0,0,0,.5)");
-        }
-
-        var targetNode = document.getElementById('modalBookingForm');
-        var observer = new MutationObserver(function () {
-            if (targetNode.style.display === 'none') {
-                // doSomething
-                $('.datetimepicker').val('');
-                $('.timepicker').val('');
-            }
-        });
-        observer.observe(targetNode, {attributes: true, childList: true});
+     <script>
+        $DAYS = {'Monday': 1, 'Tuesday': 2, 'Wednesday': 3, 'Thursday': 4, 'Friday': 5, 'Saturday': 6, 'Sunday': 0}
+        $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+        $BOOKING_MAX = {{ booking_max }};
     </script>
+    {{ super() }}
+    <script type="text/javascript" src="{{ url_for('static', filename='js/schedule.js') }}"></script>
 {% endblock %}

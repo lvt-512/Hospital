@@ -19,3 +19,18 @@
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 <script src="{{ url_for('static', filename='js/app-shop.js') }}"></script>
 <script src="{{ url_for('static', filename='form/forms.js') }}"></script>
+<!-- I edited -->
+<script type="text/javascript">
+    var targetNode = document.getElementById('modalBookingForm');
+    var observer = new MutationObserver(function () {
+        if (targetNode.style.display === 'none') {
+            // doSomething
+            $('.datetimepicker').val('');
+            $('.timepicker').val('');
+            $('label.error').each(function () {
+                $(this).css('display', 'none')
+            });
+        }
+    });
+    observer.observe(targetNode, {attributes: true, childList: true});
+</script>

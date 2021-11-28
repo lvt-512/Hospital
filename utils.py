@@ -131,7 +131,7 @@ def create_password(email, password=None):
     return hmac_sha256(password)
 
 
-def getAmoutofPeople(time, date):
+def getAmountOfPeople(time, date):
     # Every period just have 2 people
     count = 0
     for book in time.books_times:

@@ -205,9 +205,31 @@
                             type: "POST",
                             data: $(form).serialize(),
                             url: "/api/add-booking",
-                            success: function success() {
-                                $('.successform', $bookForm).fadeIn();
+                            success: function success(data) {
+                                if (window.location.pathname === "/schedule") {
+                                    var timeStr = $('input[name="bookingtime"]', $bookForm).val();
+                                    var dateStr = $('input[name="bookingdate"]', $bookForm).val();
+                                    var dataSplit = dateStr.split('/');
+                                    var date = new Date(parseInt(dataSplit[2]), parseInt(dataSplit[1]) - 1, parseInt(dataSplit[0]))
+
+                                    var time = parseInt(timeStr.substring(0, timeStr.indexOf(":"))) + parseInt(timeStr.includes("PM") ? '12' : '0');
+                                    var day = Object.keys($DAYS).find((key => $DAYS[key] === date.getDay()))
+
+                                    var period = $(`li[data-start="${("0" + time).slice(-2)}:00"][data-day="${day}"]`)
+                                    period.children("a")
+                                        .html(`${data.amount}/${$BOOKING_MAX} <div class="doctor-time">${("0" + time).slice(-2)}:00 - ${("0" + (time + 1)).slice(-2)}:00</div>`);
+                                    if (data.amount === 2) {
+                                        period.css('background-color', '#50c878')
+                                        period.children("a").css("color", "#ffffff")
+                                        period.css("pointer-events", "none");
+                                    } else if (data.amount === 1) {
+                                        period.css('background-color', '#55a2e485')
+                                        period.children("a").css("color", "#1e76bd")
+                                    }
+                                }
+
                                 $bookForm.get(0).reset();
+                                $('.modal-content button.close').click();
                             },
                             error: function error(jqXHR, textStatus, errorThrown) {
                                 $('.errorform', $bookForm).fadeIn();
