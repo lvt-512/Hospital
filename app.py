@@ -51,6 +51,11 @@ def contact():
     return render_template('contact.html')
 
 
+@app.route('/user-profile')
+def user_profile():
+    return render_template("user_profile.html", records=utils.get_records(current_user.patient.id))
+
+
 @my_login.user_loader
 def user_loader(account_id):
     return AccountPatient.query.get(account_id) if AccountPatient.query.get(account_id) \
@@ -211,6 +216,17 @@ def validate_email():
     return jsonify(True)
 
 
+@app.route("/api/change-password", methods=["post"])
+def change_password():
+    old = request.form.get("old_password")
+    new = request.form.get("new_password")
+
+    if utils.change_password(current_user.patient.account.email, old, new):
+        return jsonify({"message": "Change Successful!"}), 200
+
+    return jsonify({"message": "ERROR: Incorrect password!"}), 405
+
+
 @app.route("/api/check-booking-date", methods=["post"])
 def check_booking_date():
     date = request.form.get("bookingdate")
@@ -287,7 +303,7 @@ def add_booking():
     period = f"{period:02d}:00 - {period + 1:02d}:00"
     time = Time.query.filter(Time.period == period).first()
 
-    if utils.getAmountOfPeople(time, books["date"]) == BOOKING_MAX:
+    if utils.get_amount_of_people(time, books["date"]) == BOOKING_MAX:
         return jsonify({"message": "Maximum of people!"}), 400
 
     books["time"] = time
@@ -295,7 +311,7 @@ def add_booking():
     if utils.add_booking(**books):
         return jsonify({
             "message": "booking successfully!",
-            "amount": utils.getAmountOfPeople(time, books["date"])
+            "amount": utils.get_amount_of_people(time, books["date"])
         }), 200
 
     return jsonify({"message": "can't add booking!"}), 404
@@ -311,7 +327,7 @@ def load_schedule():
         date = request.args.get('bookingdate')
         date = datetime.datetime.strptime(date, '%d/%m/%Y')
 
-        amount = utils.getAmountOfPeople(time, date)
+        amount = utils.get_amount_of_people(time, date)
 
         return jsonify({"amount": amount}), 200
     except Exception as ex:

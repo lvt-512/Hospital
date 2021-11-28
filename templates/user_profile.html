@@ -1,0 +1,187 @@
+{% extends 'layout/base.html' %}
+
+{% block title %}Clinic - My Profile{% endblock %}
+
+{% block stylesheets %}
+    <!-- stylesheets -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+{% endblock %}
+
+{% block body %}
+    <body>
+    <div class="main-content">
+
+        <!-- Header -->
+        <div class="header pb-8 pt-5 pt-lg-8 d-flex align-items-center"
+             style="min-height: 600px; background-image: url({{ url_for('static', filename='images/bg_profile.jpg') }}); background-size: cover; background-position: center top;">
+            <!-- Mask -->
+            <span class="mask bg-gradient-default opacity-8"></span>
+            <!-- Header container -->
+            <div class="container-fluid d-flex align-items-center">
+                <div class="row">
+                    <div class="col-lg-7 col-md-10">
+                        <h1 class="display-2 text-white">Hello {{ current_user.patient.name }}</h1>
+                        <p class="text-white mt-0 mb-5">This is your profile page. You can see the progress you've made
+                            with your work and manage your projects or assigned tasks</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Page content -->
+        <div class="container-fluid mt--7">
+            <div class="row">
+                <div class="col-xl-4 order-xl-2 mb-5 mb-xl-0">
+                    <div class="card card-profile shadow">
+                        <div class="row justify-content-center">
+                            <div class="card-profile-image">
+                                <a href="#">
+                                    <img src="{{ current_user.patient.avatar }}" class="rounded-circle">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body pt-0 pt-md-4">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-8 order-xl-1">
+                    <div class="card bg-secondary shadow">
+                        <div class="card-header bg-white border-0">
+                            <div class="row align-items-center">
+                                <div class="col-8">
+                                    <h3 class="mb-0">My account</h3>
+                                </div>
+                                <div class="col-4 text-right">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="heading-small text-muted mb-4">User information</h6>
+                            <div class="pl-lg-4">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group focused">
+                                            <label class="form-control-label" for="input-username">Username</label>
+                                            <input type="text" id="input-username"
+                                                   class="form-control form-control-alternative" placeholder="Username"
+                                                   value="{{ current_user.patient.name }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label class="form-control-label" for="input-email">Email address</label>
+                                            <input type="email" id="input-email"
+                                                   class="form-control form-control-alternative" placeholder="Email"
+                                                   value="{{ current_user.patient.email }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="#" class="btn btn-info">Update Info</a>
+                            </div>
+                            <hr class="my-4">
+                            <!-- Address -->
+                            <form id="changePasswordForm" method="post">
+                                <h6 class="heading-small text-muted mb-4">Change Password</h6>
+                                <div class="pl-lg-4">
+                                    <div class="row"></div>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div class="form-group focused">
+                                                <label class="form-control-label" for="input-city">Current
+                                                    Password</label>
+                                                <input type="text" id="input-city"
+                                                       class="form-control form-control-alternative"
+                                                       placeholder="Old Password">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group focused">
+                                                <label class="form-control-label" for="input-country">New
+                                                    Password</label>
+                                                <input type="text" id="input-country"
+                                                       class="form-control form-control-alternative"
+                                                       placeholder="New Password">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label class="form-control-label" for="input-country">Confirm
+                                                    Password</label>
+                                                <input type="text" id="input-postal-code"
+                                                       class="form-control form-control-alternative"
+                                                       placeholder="Confirm Password">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="padding: 0 15px;!important;">
+                                        <input type="submit" class="btn btn-hover-fill text-info" value="Change"/>
+                                    </div>
+                                </div>
+                            </form>
+                            <hr class="my-4">
+                            <!-- Description -->
+
+                            <h6 class="heading-small text-muted mb-4"
+                                type="button"
+                                data-toggle="collapse"
+                                data-target="#collapseExample"
+                                aria-expanded="false"
+                                aria-controls="collapseExample">
+                                -_ Clinic Records _-
+                            </h6>
+                            <div class="pl-lg-4">
+                                <div class="form-group focused">
+                                    <table cellpadding="15" style="width: 100%; border: 1px solid #1e76bd">
+                                        <tr style="background-color:#1e76bd; color: white">
+                                            <td><b>
+                                                <center>Id</center>
+                                            </b></td>
+                                            <td><b>
+                                                <center>Checked Date</center>
+                                            </b></td>
+                                            <td><b>
+                                                <center>Name Disease</center>
+                                            </b></td>
+                                            <td><b>
+                                                <center>Description</center>
+                                            </b></td>
+                                        </tr>
+                                        {% for r in records %}
+
+                                            <tr>
+                                                <td><b>
+                                                    <center>{{ r.id }}</center>
+                                                </b></td>
+                                                <td><b>
+                                                    <center>{{ r.checked_date }}</center>
+                                                </b></td>
+                                                <td><b>
+                                                    <center>{{ r.disease.name }}</center>
+                                                </b></td>
+                                                <td><b>
+                                                    <center>{{ r.disease.description }}</center>
+                                                </b></td>
+                                            </tr>
+
+                                        {% endfor %}
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="row align-items-center justify-content-xl-between">
+            <div class="col-xl-6 m-auto text-center">
+                <div class="copyright">
+                </div>
+            </div>
+        </div>
+    </footer>
+    </body>
+{% endblock %}

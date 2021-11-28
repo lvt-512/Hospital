@@ -8,7 +8,7 @@ from flask_mail import Message
 from sqlalchemy import text
 
 from my_clinic import app, mail, s
-from my_clinic.models import Customer, Question, db, Patient, Books, AccountPatient
+from my_clinic.models import Customer, Question, db, Patient, Books, AccountPatient, ClinicalRecords
 
 
 def add_questions(name, email, topic, message):
@@ -131,10 +131,30 @@ def create_password(email, password=None):
     return hmac_sha256(password)
 
 
-def getAmountOfPeople(time, date):
+def get_amount_of_people(time, date):
     # Every period just have 2 people
     count = 0
     for book in time.books_times:
         if book.booked_date == date:
             count += 1
     return count
+
+
+def get_records(patient_id):
+    return ClinicalRecords.query.filter(ClinicalRecords.patient_id == patient_id).all()
+
+
+def change_password(email, old_password, new_password):
+    account_patient = AccountPatient.query.filter(AccountPatient.email == email).first()
+
+    old_password = hmac_sha256(old_password)
+    new_password = hmac_sha256(new_password)
+
+    if old_password == account_patient.password:
+        account_patient.password = new_password
+        db.session.add(account_patient)
+        db.session.commit()
+        return True
+
+    return False
+
