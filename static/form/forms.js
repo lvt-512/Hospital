@@ -9,10 +9,11 @@
             questionForm: $('#questionForm'),
             bookForm: $('#bookForm'),
             loginForm: $('#loginForm'),
-            registerForm: $('#registerForm')
+            registerForm: $('#registerForm'),
+            changePasswordForm: $('#changePasswordForm'),
         };
 
-    $document.ready(function () {
+    $document.ready(function (e) {
 
             // datepicker
             if ($('.datetimepicker').length) {
@@ -340,6 +341,27 @@
                         })
                     }
                 });
+            }
+
+            // change password form
+            if (forms.changePasswordForm.length) {
+                var $changePasswordForm = forms.changePasswordForm;
+                $changePasswordForm.submit(function () {
+                    $.ajax({
+                        type: "POST",
+                        data: $changePasswordForm.serialize(),
+                        url: "/api/change-password",
+                        success: function success(data, textStatus, jqXHR) {
+                            alert(data.message);
+                            $changePasswordForm.get(0).reset();
+                        },
+                        error: function error(jqXHR, textStatus, errorThrown) {
+                            alert(jqXHR.responseJSON.message);
+                        }
+                    })
+                    return false;
+                })
+
             }
         }
     );

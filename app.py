@@ -53,7 +53,7 @@ def contact():
 
 @app.route('/user-profile')
 def user_profile():
-    return render_template("user_profile.html", records=utils.get_records(current_user.patient.id))
+    return render_template("user-profile.html", records=utils.get_records(current_user.patient.id))
 
 
 @my_login.user_loader
@@ -218,8 +218,8 @@ def validate_email():
 
 @app.route("/api/change-password", methods=["post"])
 def change_password():
-    old = request.form.get("old_password")
-    new = request.form.get("new_password")
+    old = request.form.get("oldPassword")
+    new = request.form.get("newPassword")
 
     if utils.change_password(current_user.patient.account.email, old, new):
         return jsonify({"message": "Change Successful!"}), 200

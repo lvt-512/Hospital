@@ -133,6 +133,7 @@ class Medicine(db.Model):
 class Receipt(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     created_date = Column(DateTime, default=datetime.now())
+    status = Column(Integer, default=0)
     assistant_id = Column(Integer, ForeignKey(Assistant.id), nullable=False)
     patient_id = Column(Integer, ForeignKey(Patient.id), nullable=False)
     details = relationship('ReceiptDetails', backref='receipt', lazy=True)
