@@ -38,6 +38,8 @@ class Policy(db.Model):
 class Customer(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False)
+    idCard = Column(Integer, nullable=True)
+    phone = Column(Integer, nullable=True)
     email = Column(String(100), nullable=False, unique=True)
     questions = relationship('Question', cascade="all,delete", backref='customer', lazy=True)
     books = relationship('Books', cascade="all,delete", backref='customer', lazy=True)
@@ -125,6 +127,7 @@ class ClinicalRecords(db.Model):
 
 class Medicine(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(50), nullable=False)
     unit = Column(Integer, nullable=False)
     price = Column(Integer, nullable=False)
     receipt_details = relationship('ReceiptDetails', backref="medicine", lazy=True)

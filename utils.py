@@ -5,10 +5,12 @@ import string
 
 from flask import url_for, abort
 from flask_mail import Message
-from sqlalchemy import text
+from sqlalchemy import text, func
+from sqlalchemy.sql.functions import count
 
 from my_clinic import app, mail, s
-from my_clinic.models import Customer, Question, db, Patient, Books, AccountPatient, ClinicalRecords
+from my_clinic.models import Customer, Question, db, Patient, Books, AccountPatient, ClinicalRecords, Receipt, \
+    ReceiptDetails, Disease, Medicine
 
 
 def add_questions(name, email, topic, message):
@@ -158,3 +160,46 @@ def change_password(email, old_password, new_password):
 
     return False
 
+
+def get_all_receipts():
+    return db.session.query(Receipt.created_date, Customer.name,
+                            func.sum(ReceiptDetails.quantity * ReceiptDetails.unit_price).label("TotalPrice")) \
+        .join(Receipt, Receipt.id == ReceiptDetails.receipt_id) \
+        .join(Customer, Customer.id == Receipt.patient_id).group_by(ReceiptDetails.receipt_id, Customer.name).all()
+
+
+def get_profile_customer(name_patient=None):
+    profile = db.session.query(Receipt.created_date, Customer.name, Customer.idCard, Customer.phone,
+                               Disease.name.label("nameDis"),
+                               func.sum(ReceiptDetails.quantity * ReceiptDetails.unit_price).label("TotalPrice")) \
+        .join(Receipt, Receipt.id == ReceiptDetails.receipt_id) \
+        .join(Customer, Customer.id == Receipt.patient_id) \
+        .join(ClinicalRecords, ClinicalRecords.patient_id == Customer.id) \
+        .join(Disease, Disease.id == ClinicalRecords.disease_id) \
+        .group_by(ReceiptDetails.receipt_id, Customer.name)
+    if name_patient:
+        profile = profile.filter(Customer.name.contains(name_patient))
+
+    return profile.all()
+
+
+def get_name_receipt_detail(name_patient):
+    return db.session.query(Medicine.name, ReceiptDetails.medicine_id, ReceiptDetails.quantity,
+                            ReceiptDetails.unit_price, Receipt.created_date) \
+        .join(Receipt, Receipt.id == ReceiptDetails.receipt_id).join(Medicine,
+                                                                     Medicine.id == ReceiptDetails.medicine_id) \
+        .join(Customer, Customer.id == Receipt.patient_id) \
+        .filter(Customer.name == name_patient).all()
+
+
+def get_stats_by_date(date_start=None, date_end=None):
+    stats = db.session.query(Disease.name, count(ClinicalRecords.patient_id).label("count_di")) \
+        .join(Disease, Disease.id == ClinicalRecords.disease_id)
+
+    if date_start:
+        stats = stats.filter(ClinicalRecords.checked_date.__ge__(date_start))
+
+    if date_end:
+        stats = stats.filter(ClinicalRecords.checked_date.__le__(date_end))
+
+    return stats.group_by(ClinicalRecords.disease_id).all()

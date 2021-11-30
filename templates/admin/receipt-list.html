@@ -1,0 +1,25 @@
+{% extends 'admin/master.html '%}
+
+{% block body %}
+<h1 class="text-danger"> HÓA ĐƠN CỦA BỆNH NHÂN</h1>
+<div class="container">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Ngày khám</th>
+        <th>Bệnh nhân</th>
+        <th>Tổng tiền</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for p in detail %}
+      <tr>
+        <td>{{ p.created_date }}</td>
+        <td>{{ p.name }}</td>
+        <td>{{ p.TotalPrice }} $</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

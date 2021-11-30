@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% if not products %}
+<div>
+    Không có ai đặt lịch
+</div>
+{% else %}
+<table border="1">
+    <tr>
+        <th>head1</th>
+        <th>head2</th>
+        <th>head3</th>
+        <th>head4</th>
+    </tr>
+    {% for b in books %}
+    <tr>
+        <td>{{ b.id }}111</td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td>sdsd</td>
+    </tr>
+    {% endif %}
+</table>
+</body>
+</html>

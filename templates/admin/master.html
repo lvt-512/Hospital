@@ -1,0 +1,71 @@
+{% extends admin_base_template %}
+
+{% block head_meta %}
+    {{ super() }}
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.png') }}" type="image/x-icon">
+{% endblock %}
+
+{% block brand %}
+    <a href="{{ admin_view.admin.url }}">
+        <img class="navbar-brand" src="{{ url_for('static', filename='images/logo.png') }}" alt="logo"/>
+    </a>
+{% endblock %}
+
+{% block head_css %}
+    {{ super() }}
+    <style>
+        .navbar-brand {
+            max-width: 100px;
+            background: #fff;
+            padding: 10px 10px;
+        !important;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .navbar-nav li.dropdown:last-child {
+            position: absolute !important;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: url("{{ url_for('static', filename='images/menu.png') }}");
+            background-size: cover;
+        }
+
+        .navbar-nav li.dropdown:last-child ul.dropdown-menu {
+            margin-top: 5px;
+            left: 100%;
+            transform: translateX(-100%);
+        }
+
+        .navbar-nav li.dropdown:last-child a.dropdown-toggle.nav-link {
+            opacity: 0;
+        }
+
+        li.active{
+            position: relative;!important;
+        }
+        li.active:after{
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            border-radius: 3px;
+            background: white;
+            bottom: 0;
+        }
+
+        /*----- button logout -----*/
+        a[href$="/admin/logout/"] {
+            background: #d9534f;
+            color: white !important;
+        }
+
+        a[href$="/admin/logout/"]:hover {
+            background: #c34b47;
+        }
+    </style>
+{% endblock %}

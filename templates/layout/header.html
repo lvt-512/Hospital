@@ -23,16 +23,18 @@
 							<a href="#" class="hovicon"><i class="icon-google-plus-circle"></i></a>
 						</span>
                     {% if current_user.is_authenticated %}
-                        <div class="dropdown">
+                        <div class="dropdown" onclick="location.href={{ "'/admin'" if current_user.assistant else "#" }}">
                             <a class="header-user dropdown-toggle" href="#" data-toggle="dropdown">
                                 <span><i class="icon-user-logo-circle"></i></span>
-                                <span>{{ current_user.patient.name }}</span>
+                                <span>{{ current_user.patient.name if current_user.patient else current_user.assistant.name }}</span>
                             </a>
+                            {% if current_user.patient %}
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="/user-profile">My profile</a></li>
                                 <li><a class="dropdown-item" href="#" style="border-top: 1px solid #1e76bd">Request Payment</a></li>
                                 <li><a class="dropdown-item" href="/user-logout">Log out</a></li>
                             </ul>
+                            {% endif %}
                         </div>
                     {% else %}
                         <span class="header-login">

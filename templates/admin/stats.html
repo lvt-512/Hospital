@@ -1,0 +1,121 @@
+{% extends 'admin/master.html '%}
+
+{% block body %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.2/chart.min.js"
+     integrity="sha512-VCHVc5miKoln972iJPvkQrUYYq7XpxXzvqNfiul1H4aZDwGBGC0lq373KNleaB2LpnC2a/iNfE5zoRYmB4TRDQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="../../static/css/stylestats.css">
+<h1 class="text-danger"> Thống kê số lượng bệnh nhân </h1><br><br>
+
+    <div>
+    <form action="/admin/statsview/">
+        <label>Từ: </label>
+        <input type="date" name="date_start">
+        <label> Đến: </label>
+        <input type="date" name="date_end">
+        <input type="submit" value="Lọc">
+    </form>
+    </div>
+
+    <div style="margin-top: 40px">
+    <table border="3" cellpadding="10" style="width: 800px">
+        <tr>
+        <th class="stats-th">Loại bệnh</th>
+            {% for p in stats %}
+            <th class="stats-th">{{ p.name }}</th>
+            {% endfor %}
+        </tr>
+        <tr>
+        <td class="stats-td">Số lượng</td>
+            {% for p in stats %}
+            <td class="stats-td">{{ p.count_di }}</td>
+            {% endfor %}
+        </tr>
+    </table>
+    </div>
+
+
+    <div style="display: flex; margin-top: 50px">
+    <div style="width: 400px; height: 400px">
+        <canvas id="myChart1"></canvas>
+    </div>
+
+
+    <div style="width:800px; height:400px; margin-left: 50px">
+    <canvas id="myChart2" ></canvas>
+    </div>
+    </div>
+
+    <script>
+    var ctx1 = document.getElementById('myChart1').getContext('2d');
+    var myChart1 = new Chart(ctx1, {
+        type: 'pie',
+        data : {
+              labels: [
+                {% for p in stats %}
+                    '{{ p.name }}',
+                    {% endfor %}
+              ],
+              datasets: [{
+                label: 'Số lượng người bệnh',
+                data: [{% for p in stats %}
+                    {{ p.count_di }},
+                    {% endfor %}],
+                backgroundColor: [
+                  'rgb(255, 99, 132)',
+                  'rgb(54, 162, 235)',
+                  'rgb(255, 205, 86)',
+                    'rgb(48, 233, 41)'
+                ]
+              }],
+
+            },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    </script>
+
+    <script>
+    let s = 10;
+const ctx2 = document.getElementById('myChart2').getContext('2d');
+const myChart2 = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+        labels: [{% for p in stats %}
+                    '{{ p.name }}',
+                    {% endfor %}],
+        datasets: [{
+            label: 'Số lượng người đi khám bệnh',
+            data: [{% for p in stats %}
+                    {{ p.count_di }},
+                    {% endfor %}],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.5)',
+'rgba(54, 162, 235, 0.5)',
+                'rgba(255, 206, 86, 0.5)',
+                'rgba(75, 192, 192, 0.5)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

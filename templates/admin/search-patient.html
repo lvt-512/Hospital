@@ -1,0 +1,37 @@
+{% extends 'admin/master.html '%}
+
+{% block body %}
+<h1 class="text-danger"> THÔNG TIN CỦA BỆNH NHÂN</h1>
+<form action="/admin/profilepatinetview/">
+  <label for="namepatient">Nhập Tên bệnh nhân:</label>
+  <input type="text" id="namepatient" name="namepatient"><br><br>
+  <input type="submit" value="Xem thông tin bệnh nhân">
+</form>
+
+<div class="container">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th>Name</th>
+        <th>Id Card</th>
+        <th>Phone</th>
+        <th>Disease</th>
+        <th>Price</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for p in getPatient %}
+      <tr>
+        <td>{{ p.created_date }}</td>
+        <td>{{ p.name }}</td>
+        <td>{{ p.idCard }} </td>
+        <td>{{ p.phone }}</td>
+        <td>{{ p.nameDis }} </td>
+        <td>{{ p.TotalPrice }} $</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

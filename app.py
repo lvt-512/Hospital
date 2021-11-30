@@ -1,19 +1,16 @@
 import datetime
-import hashlib
-import hmac
 import json
 
 import requests
 from itsdangerous import SignatureExpired
 
-import utils
-from flask_login import login_user, logout_user, current_user
+from flask_login import login_user
 
-from my_clinic import app, my_login, client \
-    , GOOGLE_DISCOVERY_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, db, s, BOOKING_MAX
-from flask import render_template, request, redirect, jsonify
+from my_clinic import app, my_login, s, client,\
+    GOOGLE_DISCOVERY_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, BOOKING_MAX
+from flask import render_template, jsonify
 
-from my_clinic.models import AccountPatient, AccountAssistant, Account, Patient, Customer, Time
+from admin import *
 
 
 @app.route('/')
@@ -68,11 +65,8 @@ def admin_login_exe():
     username = request.form.get("username")
     password = request.form.get("password")
     # password encryption
-    password = hmac.new(app.secret_key.encode('utf-8'),
-                        password.encode('utf-8'),
-                        hashlib.sha256).hexdigest()
 
-    user = Account.query.filter(AccountAssistant.username == username,
+    user = Account.query.filter(AccountAssistant.email == username,
                                 AccountAssistant.password == password).first()
     if user:  # login success
         login_user(user)
