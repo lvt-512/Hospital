@@ -3,8 +3,9 @@ from flask_admin import BaseView, expose
 from flask_login import current_user, logout_user
 from flask import redirect, request
 
-from my_clinic.models import *
-from my_clinic import admin
+from my_clinic.models import Time, Medicine, Patient, Assistant, Books, ClinicalRecords, Receipt, ReceiptDetails, \
+    Question, Advisory, Policy, Disease
+from my_clinic import admin, db
 
 import utils
 
@@ -162,6 +163,24 @@ class GetDetailView(BaseView):
         return current_user.is_authenticated
 
 
+class DetailByDateView(BaseView):
+    @expose("/")
+    def index(self):
+        date1 = request.args.get("date_start")
+        date2 = request.args.get("date_end")
+        detail_date = utils.get_all_detail_by_date(date1=date1, date2=date2)
+        totaldetail_date = utils.get_totaldetail_by_date(date1=date1, date2=date2)
+        if detail_date and totaldetail_date:
+            mes = "co du lieu"
+            return self.render("admin/detail-date.html", detail_date=detail_date, totaldetail_date=totaldetail_date, mes=mes)
+        else:
+            mes = "chua co du lieu"
+            return self.render("admin/detail-date.html", detail_date=detail_date, totaldetail_date=totaldetail_date, mes=mes)
+
+    def is_accessible(self):
+        return current_user.is_authenticated
+
+
 admin.add_view(TimeModelView(Time, db.session, name="Time"))
 
 admin.add_view(MedicineModelView(Medicine, db.session, name="Medicines", category='Lists'))
@@ -184,6 +203,7 @@ admin.add_view(PolicyModelView(Policy, db.session, name="Rules"))
 admin.add_view(DiseaseModelView(Disease, db.session, name="Disease"))
 
 admin.add_view(StatsView(name="Monthly Report", category="Statistics"))
+admin.add_view(DetailByDateView(name="Stats", category="Statistics"))
 
 admin.add_view(MenuView(name="My Profile", endpoint="profile", category="menu"))
 admin.add_view(LogoutView(name="Logout", endpoint="logout", category="menu"))

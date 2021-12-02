@@ -1,16 +1,18 @@
-import datetime
+import base64
 import json
+from datetime import datetime as dt, time
 
 import requests
+from flask import render_template, jsonify
+from flask_login import login_user
 from itsdangerous import SignatureExpired
 
-from flask_login import login_user
-
-from my_clinic import app, my_login, s, client,\
-    GOOGLE_DISCOVERY_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, BOOKING_MAX
-from flask import render_template, jsonify
-
 from admin import *
+from my_clinic import app, my_login, s, client, \
+    GOOGLE_DISCOVERY_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, BOOKING_MAX
+from my_clinic.models import Account, AccountPatient, Customer, AccountAssistant
+from my_clinic.momo import MoMo
+from my_clinic.paypal import CaptureOrder, CreateOrder, GetOrder
 
 
 @app.route('/')
@@ -51,6 +53,14 @@ def contact():
 @app.route('/user-profile')
 def user_profile():
     return render_template("user-profile.html", records=utils.get_records(current_user.patient.id))
+
+
+@app.route('/payment-online')
+def payment_online():
+    receipt = utils.get_request_payment(current_user.patient_id)
+    return render_template('payment.html',
+                           receipt=receipt,
+                           receipt_stats=utils.receipt_stats(receipt))
 
 
 @my_login.user_loader
@@ -159,7 +169,7 @@ def callback():
     # The user authenticated with Google, authorized your
     # app, and now you've verified their email through Google!
     if userinfo_response.json().get("email_verified"):
-        unique_id = userinfo_response.json()["sub"]
+        # unique_id = userinfo_response.json()["sub"]
         users_email = userinfo_response.json()["email"]
         picture = userinfo_response.json()["picture"]
         users_name = userinfo_response.json()["given_name"]
@@ -224,17 +234,17 @@ def change_password():
 @app.route("/api/check-booking-date", methods=["post"])
 def check_booking_date():
     date = request.form.get("bookingdate")
-    if datetime.datetime.strptime(date, '%d/%m/%Y') > datetime.datetime.now():
+    if dt.strptime(date, '%d/%m/%Y') > dt.now():
         return jsonify(True)
     return jsonify(False)
 
 
 @app.route("/api/check-booking-time", methods=["post"])
 def check_booking_time():
-    time = request.form.get("bookingtime")
-    time = datetime.datetime.strptime(time, '%I:%M %p').time()
-    if time < datetime.time(8, 0, 0) or time > datetime.time(19, 0, 0) \
-            or datetime.time(13, 0, 0) > time > datetime.time(12, 0, 0):
+    booking_time = request.form.get("bookingtime")
+    booking_time = dt.strptime(booking_time, '%I:%M %p').time()
+    if booking_time < time(8, 0, 0) or booking_time > time(19, 0, 0) \
+            or time(13, 0, 0) > booking_time > time(12, 0, 0):
         return jsonify(False)
     return jsonify(True)
 
@@ -291,21 +301,21 @@ def add_booking():
         "date": request.form.get("bookingdate")
     }
 
-    books["date"] = datetime.datetime.strptime(books["date"], '%d/%m/%Y')
+    books["date"] = dt.strptime(books["date"], '%d/%m/%Y')
 
-    period = datetime.datetime.strptime(request.form.get("bookingtime"), '%I:%M %p').hour
+    period = dt.strptime(request.form.get("bookingtime"), '%I:%M %p').hour
     period = f"{period:02d}:00 - {period + 1:02d}:00"
-    time = Time.query.filter(Time.period == period).first()
+    booking_time = Time.query.filter(Time.period == period).first()
 
-    if utils.get_amount_of_people(time, books["date"]) == BOOKING_MAX:
+    if utils.get_amount_of_people(booking_time, books["date"]) == BOOKING_MAX:
         return jsonify({"message": "Maximum of people!"}), 400
 
-    books["time"] = time
+    books["time"] = booking_time
 
     if utils.add_booking(**books):
         return jsonify({
             "message": "booking successfully!",
-            "amount": utils.get_amount_of_people(time, books["date"])
+            "amount": utils.get_amount_of_people(booking_time, books["date"])
         }), 200
 
     return jsonify({"message": "can't add booking!"}), 404
@@ -314,19 +324,72 @@ def add_booking():
 @app.route("/api/load-schedule")
 def load_schedule():
     try:
-        time = int(request.args.get('bookingtime'))
-        period = f"{time:02d}:00 - {time + 1:02d}:00"
-        time = Time.query.filter(Time.period == period).first()
+        booking_time = int(request.args.get('bookingtime'))
+        period = f"{booking_time:02d}:00 - {booking_time + 1:02d}:00"
+        booking_time = Time.query.filter(Time.period == period).first()
 
         date = request.args.get('bookingdate')
-        date = datetime.datetime.strptime(date, '%d/%m/%Y')
+        date = dt.strptime(date, '%d/%m/%Y')
 
-        amount = utils.get_amount_of_people(time, date)
+        amount = utils.get_amount_of_people(booking_time, date)
 
         return jsonify({"amount": amount}), 200
     except Exception as ex:
         print(ex)
         return jsonify({"message": "Error"}), 404
+
+
+@app.route('/api/create-paypal-transaction', methods=['post'])
+def create_paypal_transaction():
+    receipt = utils.get_request_payment(current_user.patient_id)
+    resp = CreateOrder().create_order(debug=True)
+    return jsonify({"id": resp.result.id})
+
+
+@app.route('/api/capture-paypal-transaction', methods=['post'])
+def capture_paypal_transaction():
+    order_id = request.json['orderID']
+    resp = CaptureOrder().capture_order(order_id)
+    status_code = resp.status_code
+
+    if not utils.complete_payment(utils.get_request_payment(current_user.patient_id).id):
+        status_code = 404
+
+    return jsonify({
+        "status_code": status_code
+    })
+
+
+@app.route("/pay-with-momo")
+def pay_with_momo():
+    data = MoMo().payment_order()
+
+    return redirect(data['payUrl'])
+
+
+@app.route("/momo/payment-result")
+def payment_result():
+    extra_data = request.args.get("extraData")
+    data = json.loads(base64.b64decode(extra_data.encode('utf-8')).decode('utf-8'))
+
+    if utils.complete_payment(int(data['receipt_id'])):
+        return "Successful!<br/><a href='/'>Back to home -></a>"
+
+    return "payment failed!. try later!<br/><a href='/'>Back to home -></a>"
+
+
+@app.context_processor
+def common_context():
+    is_request_payment = False
+
+    if current_user.is_authenticated:
+        if hasattr(current_user, 'patient'):
+            if utils.get_request_payment(current_user.patient_id):
+                is_request_payment = True
+
+    return {
+        "is_request_payment": is_request_payment
+    }
 
 
 if __name__ == '__main__':

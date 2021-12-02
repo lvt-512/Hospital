@@ -5,7 +5,7 @@ import string
 
 from flask import url_for, abort
 from flask_mail import Message
-from sqlalchemy import text, func
+from sqlalchemy import text, func, and_
 from sqlalchemy.sql.functions import count
 
 from my_clinic import app, mail, s
@@ -142,6 +142,36 @@ def get_amount_of_people(time, date):
     return count
 
 
+def get_request_payment(patient_id):
+    return Receipt.query.filter(and_(Receipt.patient_id == patient_id, Receipt.status == 0)).first()
+
+
+def receipt_stats(receipt):
+    total_quantity, total_amount = 0, 0
+
+    for item in receipt.details:
+        total_quantity += item.quantity
+        total_amount += item.quantity * item.unit_price
+
+    return {
+        "total_quantity": total_quantity,
+        "total_amount": total_amount
+    }
+
+
+def complete_payment(receipt_id):
+    try:
+        receipt = Receipt.query.get(receipt_id)
+        receipt.status = 1
+        db.session.add(receipt)
+        db.session.commit()
+
+        return True
+    except Exception as ex:
+        print(ex)
+        return False
+
+
 def get_records(patient_id):
     return ClinicalRecords.query.filter(ClinicalRecords.patient_id == patient_id).all()
 
@@ -169,14 +199,15 @@ def get_all_receipts():
 
 
 def get_profile_customer(name_patient=None):
-    profile = db.session.query(Receipt.created_date, Customer.name, Customer.idCard, Customer.phone,
+    profile = db.session.query(Receipt.created_date, Customer.name, Customer.phone,
                                Disease.name.label("nameDis"),
                                func.sum(ReceiptDetails.quantity * ReceiptDetails.unit_price).label("TotalPrice")) \
         .join(Receipt, Receipt.id == ReceiptDetails.receipt_id) \
         .join(Customer, Customer.id == Receipt.patient_id) \
-        .join(ClinicalRecords, ClinicalRecords.patient_id == Customer.id) \
+        .join(ClinicalRecords, func.DATE(ClinicalRecords.checked_date) == func.DATE(Receipt.created_date)) \
         .join(Disease, Disease.id == ClinicalRecords.disease_id) \
         .group_by(ReceiptDetails.receipt_id, Customer.name)
+
     if name_patient:
         profile = profile.filter(Customer.name.contains(name_patient))
 
@@ -184,12 +215,16 @@ def get_profile_customer(name_patient=None):
 
 
 def get_name_receipt_detail(name_patient):
-    return db.session.query(Medicine.name, ReceiptDetails.medicine_id, ReceiptDetails.quantity,
-                            ReceiptDetails.unit_price, Receipt.created_date) \
+    detail = db.session.query(Medicine.name, ReceiptDetails.medicine_id, ReceiptDetails.quantity,
+                              ReceiptDetails.unit_price, Receipt.created_date) \
         .join(Receipt, Receipt.id == ReceiptDetails.receipt_id).join(Medicine,
                                                                      Medicine.id == ReceiptDetails.medicine_id) \
-        .join(Customer, Customer.id == Receipt.patient_id) \
-        .filter(Customer.name == name_patient).all()
+        .join(Customer, Customer.id == Receipt.patient_id)
+
+    if name_patient:
+        detail = detail.filter(Customer.name.contains(name_patient))
+
+    return detail.all()
 
 
 def get_stats_by_date(date_start=None, date_end=None):
@@ -203,3 +238,32 @@ def get_stats_by_date(date_start=None, date_end=None):
         stats = stats.filter(ClinicalRecords.checked_date.__le__(date_end))
 
     return stats.group_by(ClinicalRecords.disease_id).all()
+
+
+def get_all_detail_by_date(date1=None, date2=None):
+    detail_by_date = db.session.query(Receipt.created_date, Customer.name,
+                                      func.sum(ReceiptDetails.quantity * ReceiptDetails.unit_price).label("TotalPrice")) \
+        .join(Receipt, Receipt.id == ReceiptDetails.receipt_id) \
+        .join(Customer, Customer.id == Receipt.patient_id)
+
+    if date1:
+        detail_by_date = detail_by_date.filter(Receipt.created_date.__ge__(date1))
+
+    if date2:
+        detail_by_date = detail_by_date.filter(Receipt.created_date.__le__(date2))
+
+    return detail_by_date.group_by(ReceiptDetails.receipt_id).all()
+
+
+def get_totaldetail_by_date(date1=None, date2=None):
+    totaldetail_by_date = db.session.query(
+        func.sum(ReceiptDetails.quantity * ReceiptDetails.unit_price).label("TotalPrice")) \
+        .join(Receipt, Receipt.id == ReceiptDetails.receipt_id)
+
+    if date1:
+        totaldetail_by_date = totaldetail_by_date.filter(Receipt.created_date.__ge__(date1))
+
+    if date2:
+        totaldetail_by_date = totaldetail_by_date.filter(Receipt.created_date.__le__(date2))
+
+    return totaldetail_by_date.all()

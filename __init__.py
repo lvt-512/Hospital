@@ -24,6 +24,10 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_DEFAULT_SENDER'] = ('MedAll', 'temporaryleo0512@gmail.com')
 
+# Configure through environment variables:
+app.config["PAYPAL-SANDBOX-CLIENT-ID"] = "Aa6Hn8C93yInGY6oa-St9YgzwOxToXoD_-iqvbmpcn8vl-0qVFqF0Qr6Z5F6DjWVSR4OMuaFNVg7ewEk"
+app.config["PAYPAL-SANDBOX-CLIENT-SECRET"] = "EJSfWZBrSsHIkqFwB-jPlgpFQNlaw5BG2TQEarvw6cY9JSg4noNbyERKqvHy21Na-C33CuYX_J8J4Csj"
+
 # Configuration
 GOOGLE_CLIENT_ID = "919352421263-e18mqjhotmb6l176kflviroomrbbd5qd.apps.googleusercontent.com"
 GOOGLE_CLIENT_SECRET = "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"
@@ -40,3 +44,19 @@ client = WebApplicationClient(GOOGLE_CLIENT_ID)  # OAuth 2 client setup
 mail = Mail(app)
 s = URLSafeTimedSerializer(app.secret_key)
 
+# parameters send to MoMo get get payUrl
+# All In One Solutions
+momo = {
+    "endpoint": "https://test-payment.momo.vn/gw_payment/transactionProcessor",
+    "partnerCode": "MOMO",
+    "accessKey": "F8BBA842ECF85",
+    "secretKey": "K951B6PE1waDMi640xX08PD3vg6EkVlz",
+    "orderInfo": "pay with MoMo",
+    "returnUrl": "http://127.0.0.1:5000/momo/payment-result",
+    "notifyUrl": "http://127.0.0.1:5000/momo/payment-result",
+    "amount": "",
+    "orderId": "",
+    "requestId": "",
+    "requestType": "captureMoMoWallet",
+    "extraData": ""
+}

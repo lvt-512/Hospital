@@ -1,0 +1,42 @@
+{% extends 'admin/master.html ' %}
+
+{% block body %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.2/chart.min.js"
+     integrity="sha512-VCHVc5miKoln972iJPvkQrUYYq7XpxXzvqNfiul1H4aZDwGBGC0lq373KNleaB2LpnC2a/iNfE5zoRYmB4TRDQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="../../static/css/stylestats.css">
+<h1 class="text-danger"> Thống kê doanh thu bệnh nhân </h1><br><br>
+
+    <div>
+    <form action="/admin/detailbydateview/">
+        <label>From: </label>
+        <input type="date" name="date_start">
+        <label> To: </label>
+        <input type="date" name="date_end">
+        <input type="submit" value="Lọc">
+    </form>
+    </div>
+    <div class="container">
+      <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Ngày khám</th>
+          <th>Bệnh nhân</th>
+          <th>Tổng tiền</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for p in detail_date %}
+        <tr>
+          <td>{{ p.created_date }}</td>
+          <td>{{ p.name }}</td>
+          <td>{{ p.TotalPrice }} $</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+      </table>
+      {% for p in totaldetail_date %}
+          <h4 style="text-align:right; padding-top:40px">Total: {% if p.TotalPrice %}{{ p.TotalPrice }}{% else %}0{% endif %}$</h4>
+      {% endfor %}
+    </div>
+{% endblock %}

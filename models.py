@@ -10,6 +10,7 @@ class Assistant(db.Model):
     name = Column(String(50))
     advisories = relationship('Advisory', backref='assistant', lazy=True)
     account = relationship('AccountAssistant', backref='assistant', lazy=True, uselist=False)
+    receipts = relationship('Receipt', backref='assistant', lazy=True)
 
     type = Column(String(50))
     __mapper_args__ = {
@@ -38,7 +39,6 @@ class Policy(db.Model):
 class Customer(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False)
-    idCard = Column(Integer, nullable=True)
     phone = Column(Integer, nullable=True)
     email = Column(String(100), nullable=False, unique=True)
     questions = relationship('Question', cascade="all,delete", backref='customer', lazy=True)
@@ -50,12 +50,16 @@ class Customer(db.Model):
         'polymorphic_on': type
     }
 
+    def __str__(self):
+        return self.name
+
 
 class Patient(Customer):
     id = Column(Integer, ForeignKey(Customer.id, onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
     avatar = Column(String(500), nullable=True)
     clinical_records = relationship('ClinicalRecords', backref='patient', lazy=True)
     account = relationship('AccountPatient', backref='patient', lazy=True, uselist=False)
+    receipts = relationship('Receipt', backref='patient', lazy=True)
 
     __mapper_args__ = {
         'polymorphic_identity': 'patient'
@@ -117,6 +121,9 @@ class Disease(db.Model):
     description = Column(String(1000))
     records = relationship('ClinicalRecords', backref='disease', lazy=True)
 
+    def __str__(self):
+        return self.name
+
 
 class ClinicalRecords(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -128,7 +135,7 @@ class ClinicalRecords(db.Model):
 class Medicine(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False)
-    unit = Column(Integer, nullable=False)
+    unit = Column(String(10), nullable=False)
     price = Column(Integer, nullable=False)
     receipt_details = relationship('ReceiptDetails', backref="medicine", lazy=True)
 

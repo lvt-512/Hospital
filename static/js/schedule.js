@@ -50,4 +50,4 @@ function loadSchedule() {
     }
 }
 
-setTimeout(loadSchedule, 1000);
+setTimeout(function(){loadSchedule()},400)
